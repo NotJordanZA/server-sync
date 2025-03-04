@@ -1,8 +1,11 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const { exec } = require("child_process");
 const path = require("path");
+const { runPowerShell } = require("./util/powershellRunner");
+const {saveProfile} = require("./util/saveProfile");
 
 let mainWindow;
+let profileWindow;
 
 app.whenReady().then(() => {
   mainWindow = new BrowserWindow({
@@ -10,30 +13,43 @@ app.whenReady().then(() => {
     height: 500,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      // contextIsolation: false, // Needed for simplicity
     },
   });
 
   mainWindow.loadFile("index.html");
+
+  ipcMain.on("open-profile", () => {
+    if (!profileWindow) {
+      profileWindow = new BrowserWindow({
+        width: 500,
+        height: 400,
+        parent: mainWindow, // Makes it a child window
+        modal: true, // Blocks interaction with mainWindow when open
+        webPreferences: {
+          preload: path.join(__dirname, "preload.js"),
+          contextIsolation: true,
+        },
+      });
+
+      profileWindow.loadFile("./pages/newProfile.html");
+
+      profileWindow.on("closed", () => {
+        profileWindow = null;
+      });
+    }
+  });
 });
 
 // Handle PowerShell execution from frontend
 ipcMain.on("run-powershell", (event, command) => {
-  const psScriptPath = path.join(__dirname, "scripts/multithreadedsync.ps1");
-  const fullCommand = `powershell.exe -ExecutionPolicy Bypass -File "${psScriptPath}" ${command}`;
-
-  console.log("Executing:", fullCommand);
-
-  exec(fullCommand, (error, stdout, stderr) => {
-    if (error) {
-      event.reply("powershell-output", `Error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      event.reply("powershell-output", `Stderr: ${stderr}`);
-      return;
-    }
-    event.reply("powershell-output", stdout);
+  runPowerShell(command, (output) => {
+    event.reply("powershell-output", output);
+  });
+});
+// Handle profile save
+ipcMain.on("save-profile", (event, profileName, config) => {
+  saveProfile(profileName, config, (output) => {
+    event.reply("save-profile-output", output);
   });
 });
 

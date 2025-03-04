@@ -7,7 +7,7 @@ document.getElementById("syncBtn").addEventListener("click", () => {
     const logDir = document.getElementById("logDir").value;
     const noConnections = document.getElementById("noConnections").value;
 
-    const sessionUrl = `ftp://${username}:${password}@${host}`;
+    const sessionUrl = `-sessionUrl ftp://${username}:${password}@${host}`;
     const remotePath = `-remotePath "${remoteDir}"`;
     const localPath = `-localPath "${localDir}"`;
     const logPath = `-logPath "${logDir}"`;
@@ -21,5 +21,9 @@ document.getElementById("syncBtn").addEventListener("click", () => {
 // Listen for PowerShell output
 window.electronAPI.onPowerShellOutput((data) => {
     document.getElementById("output").innerText = data;
+});
+
+document.getElementById("newProfileBtn").addEventListener("click", () => {
+    window.electronAPI.openNewProfile();
 });
   

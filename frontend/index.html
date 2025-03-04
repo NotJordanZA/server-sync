@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FTP Sync GUI</title>
+  <script defer src="renderer.js"></script>
+</head>
+<body>
+  <h2>FTP/SFTP Sync</h2>
+  <label>Host: <input type="text" id="host"></label><br>
+  <label>Username: <input type="text" id="username"></label><br>
+  <label>Password: <input type="password" id="password"></label><br>
+  <label>Local Directory: <input type="text" id="localDir"></label><br>
+  <label>Remote Directory: <input type="text" id="remoteDir"></label><br>
+  <label>Log Directory: <input type="text" id="logDir"></label><br>
+  <label>Threads: <input type="number" id="noConnections"></label><br>
+  <button id="syncBtn">Sync Now</button>
+  <pre id="output"></pre>
+</body>
+</html>

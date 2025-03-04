@@ -1,0 +1,19 @@
+{
+  "name": "server-sync",
+  "version": "1.0.0",
+  "description": "A tool for syncing two directories using s/ftp",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Jordan Bareiss",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "electron": "^35.0.0"
+  },
+  "dependencies": {
+    "electron-reload": "^2.0.0-alpha.1"
+  }
+}

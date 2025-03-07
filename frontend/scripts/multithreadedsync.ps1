@@ -3,12 +3,14 @@ param (
     [Parameter(Mandatory=$true)] [string]$remotePath,
     [Parameter(Mandatory=$true)] [string]$localPath,
     [Parameter(Mandatory=$true)] [string]$logPath,
+    [Parameter(Mandatory=$true)] [string]$fileMask,
     [Parameter(Mandatory=$true)] [int]$connections
 )
  
 try
 {
-    $assemblyFilePath = "C:\Program Files (x86)\WinSCP\netstandard2.0\WinSCPnet.dll"
+    # $assemblyFilePath = "C:\Program Files (x86)\WinSCP\netstandard2.0\WinSCPnet.dll"
+    $assemblyFilePath = "..\winscp\WinSCPnet.dll"
     # Load WinSCP .NET assembly
     Add-Type -Path $assemblyFilePath
  
@@ -35,7 +37,8 @@ try
         $session.Open($sessionOptions)
 
         $transferOptions = New-Object WinSCP.TransferOptions -Property @{
-            FileMask = ">5Y|*.tmp"
+            # FileMask = ">5Y|*.tmp"
+            FileMask = $fileMask
             PreserveTimestamp = $true
         }
         

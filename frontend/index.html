@@ -7,17 +7,10 @@
   <script defer src="renderers/renderer.js"></script>
 </head>
 <body>
-  <h2>FTP/SFTP Sync</h2>
-  <label>Host: <input type="text" id="host"></label><br>
-  <label>Username: <input type="text" id="username"></label><br>
-  <label>Password: <input type="password" id="password"></label><br>
-  <label>Local Directory: <input type="text" id="localDir"></label><br>
-  <label>Remote Directory: <input type="text" id="remoteDir"></label><br>
-  <label>Log Directory: <input type="text" id="logDir"></label><br>
-  <label>Threads: <input type="number" id="noConnections"></label><br>
+  <h2>Server Sync</h2>
   <button id="syncBtn">Sync Now</button>
   <button id="newProfileBtn">New Profile</button>
-  <button id="loadProfileBtn">Load Profile</button>
+  <div id="profileList"></div>
   <pre id="output"></pre>
 </body>
 </html>

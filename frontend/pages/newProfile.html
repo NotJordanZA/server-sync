@@ -8,6 +8,7 @@
 </head>
 <body>
   <h2>Enter Profile Details</h2>
+
   <label>Profile Name: <input type="text" id="profile"></label><br>
   <label>Host: <input type="text" id="host"></label><br>
   <label>Username: <input type="text" id="username"></label><br>
@@ -15,8 +16,102 @@
   <label>Local Directory: <input type="text" id="localDir"></label><br>
   <label>Remote Directory: <input type="text" id="remoteDir"></label><br>
   <label>Log Directory: <input type="text" id="logDir"></label><br>
-  <label>Threads: <input type="number" id="noConnections"></label><br>
+  <label>Threads: <input type="number" id="noConnections" min="1"></label><br>
+
+  <!-- Scheduling Options -->
+  <label>Schedule Backup:
+    <select id="schedule">
+      <option value="never">Never</option>
+      <option value="daily">Daily</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="yearly">Yearly</option>
+    </select>
+  </label><br>
+
+  <!-- Dynamic Scheduling Inputs -->
+  <div id="scheduleDetails" style="display: none;">
+    <label id="scheduleLabel">Select Time:</label>
+    <input type="time" id="scheduleTime"><br>
+
+    <div id="weeklyOptions" style="display: none;">
+      <label>Day of the Week:
+        <select id="weeklyDay">
+          <option value="Sunday">Sunday</option>
+          <option value="Monday">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+          <option value="Wednesday">Wednesday</option>
+          <option value="Thursday">Thursday</option>
+          <option value="Friday">Friday</option>
+          <option value="Saturday">Saturday</option>
+        </select>
+      </label><br>
+    </div>
+
+    <div id="monthlyOptions" style="display: none;">
+      <label>Day of the Month: <input type="number" id="monthlyDay" min="1" max="31"></label><br>
+    </div>
+
+    <div id="yearlyOptions" style="display: none;">
+      <input type="datetime-local" id="yearlyDate"><br>
+    </div>
+  </div>
+
+  <!-- File Mask Filtering -->
+  <label>File Mask (e.g., *.tmp, !important.log): <input type="text" id="fileMask"></label><br>
+
+  <!-- Backup Retention -->
+  <label>Exclude Files Older Than (Years): <input type="number" id="retentionYears" min="0"></label><br>
+
   <button id="saveProfileBtn">Save Profile</button>
   <pre id="output"></pre>
+
+  <script>
+    document.getElementById("schedule").addEventListener("change", function () {
+      const scheduleDetails = document.getElementById("scheduleDetails");
+      const timeInput = document.getElementById("scheduleTime");
+      const weeklyOptions = document.getElementById("weeklyOptions");
+      const monthlyOptions = document.getElementById("monthlyOptions");
+      const yearlyOptions = document.getElementById("yearlyOptions");
+      const scheduleLabel = document.getElementById("scheduleLabel");
+
+      // Hide all by default
+      scheduleDetails.style.display = "none";
+      timeInput.style.display = "none";
+      weeklyOptions.style.display = "none";
+      monthlyOptions.style.display = "none";
+      yearlyOptions.style.display = "none";
+
+      // Show relevant options
+      switch (this.value) {
+        case "daily":
+          scheduleDetails.style.display = "block";
+          timeInput.style.display = "inline-block";
+          scheduleLabel.innerText = "Select Time:";
+          break;
+
+        case "weekly":
+          scheduleDetails.style.display = "block";
+          timeInput.style.display = "inline-block";
+          weeklyOptions.style.display = "block";
+          scheduleLabel.innerText = "Select Time:";
+          break;
+
+        case "monthly":
+          scheduleDetails.style.display = "block";
+          timeInput.style.display = "inline-block";
+          monthlyOptions.style.display = "block";
+          scheduleLabel.innerText = "Select Time:";
+          break;
+
+        case "yearly":
+          scheduleDetails.style.display = "block";
+          yearlyOptions.style.display = "block";
+          scheduleLabel.innerText = "Select Date & Time:";
+          break;
+      }
+    });
+  </script>
+
 </body>
 </html>

@@ -10,7 +10,7 @@ param (
 try
 {
     # $assemblyFilePath = "C:\Program Files (x86)\WinSCP\netstandard2.0\WinSCPnet.dll"
-    $assemblyFilePath = "..\winscp\WinSCPnet.dll"
+    $assemblyFilePath = ".\winscp\WinSCPnet.dll"
     # Load WinSCP .NET assembly
     Add-Type -Path $assemblyFilePath
  

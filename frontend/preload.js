@@ -9,6 +9,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   saveProfile: (name, config) => ipcRenderer.send("save-profile", name, config),
   onSaveProfileOutput: (callback) => ipcRenderer.on("save-profile-output", (event, data) => callback(data)),
   deleteProfile: (name) => ipcRenderer.send("delete-profile", name),
+  openUpdateProfile: (name) => ipcRenderer.send("open-update-profile", name),
+  updateProfile: (name, originalName, config) => ipcRenderer.send("update-profile", name, originalName, config),
+  onUpdateProfileOutput: (callback) => ipcRenderer.on("update-profile-output", (event, data) => callback(data)),
+  onUpdateProfilePageLoad: (callback) => ipcRenderer.on("update-profile-contents", (event, data) => callback(data)),
   onDeleteProfileOutput: (callback) => ipcRenderer.on("delete-profile-output", (event, data) => callback(data)),
   showMessage: (type, title, message) => ipcRenderer.invoke("show-message", { type, title, message }),
+  syncProfiles: (profiles) => ipcRenderer.send("sync-profiles", profiles),
 });

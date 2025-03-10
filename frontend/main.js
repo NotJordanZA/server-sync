@@ -6,6 +6,8 @@ const {saveProfile} = require("./util/saveProfile");
 const {loadProfileWithPath, loadProfiles} = require("./util/loadProfile");
 const {deleteProfile} = require("./util/deleteProfile");
 const {createBatchFilesBySchedule} = require("./util/updateScheduleBatchFiles");
+const { updateProfile } = require("./util/updateProfile");
+const { syncProfiles } = require("./util/syncProfiles");
 
 let mainWindow;
 let profileWindow;
@@ -53,10 +55,42 @@ ipcMain.on('close-profile', () => {
   }
 });
 
+// Open profile update page
+ipcMain.on("open-update-profile", async(event, profileName) => {
+  if (!profileWindow) {
+    profileWindow = new BrowserWindow({
+      width: 500,
+      height: 400,
+      parent: mainWindow, // Makes it a child window
+      modal: true, // Blocks interaction with mainWindow when open
+      webPreferences: {
+        preload: path.join(__dirname, "preload.js"),
+        contextIsolation: true,
+      },
+    });
+
+    const config = {
+      name: profileName,
+      profileJSON: await loadProfileWithPath(path.join(__dirname, `/syncProfiles/${profileName}.txt`))
+    };
+
+    profileWindow.loadFile("./pages/newProfile.html").then(() => {
+      profileWindow.setTitle("Update Profile");
+    });
+    
+
+    profileWindow.webContents.send('update-profile-contents', config);
+
+    profileWindow.on("closed", () => {
+      profileWindow = null;
+    });
+  }
+});
+
 // Message dialogue box
 ipcMain.handle("show-message", async (event, { type, title, message }) => {
   await dialog.showMessageBox(mainWindow, {
-      type, // "error", "info", "warning", etc.
+      type, 
       title,
       message,
       buttons: ["OK"]
@@ -69,12 +103,21 @@ ipcMain.on("run-powershell", (event, command) => {
     event.reply("powershell-output", output);
   });
 });
+
 // Handle profile save
 ipcMain.on("save-profile", (event, profileName, config) => {
   saveProfile(profileName, config, (output) => {
     event.reply("save-profile-output", output);
   });
 });
+
+// Handle profile update
+ipcMain.on("update-profile", (event, profileName, originalName, config) => {
+  updateProfile(profileName, originalName, config, (output) => {
+    event.reply("update-profile-output", output);
+  });
+});
+
 // Handle profile delete
 ipcMain.on("delete-profile", (event, profileName) => {
   deleteProfile(profileName, (output) => {
@@ -84,10 +127,18 @@ ipcMain.on("delete-profile", (event, profileName) => {
     mainWindow.webContents.reload();
   }
 });
+
 // Handle profiles load
 ipcMain.handle("get-profiles", async () => {
   const profiles = await loadProfiles();
   return profiles;
+});
+
+// Handle profiles sync
+ipcMain.on("sync-profiles", (event, profiles) =>{
+  // console.log(profiles);
+  syncProfiles(profiles);
+  // console.log("Called");
 });
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();

@@ -7,12 +7,12 @@
   <script defer src="../renderers/save-profile-renderer.js"></script>
 </head>
 <body>
-  <h2>Enter Profile Details</h2>
+  <h2 id="newProfileHeading">Enter Profile Details</h2>
 
   <label>Profile Name: <input type="text" id="profile"></label><br>
   <label>Host: <input type="text" id="host"></label><br>
   <label>Username: <input type="text" id="username"></label><br>
-  <label>Password: <input type="password" id="password"></label><br>
+  <label>Password: <input type="text" id="password"></label><br>
   <label>Local Directory: <input type="text" id="localDir"></label><br>
   <label>Remote Directory: <input type="text" id="remoteDir"></label><br>
   <label>Log Directory: <input type="text" id="logDir"></label><br>
@@ -64,7 +64,6 @@
   <label>Exclude Files Older Than (Years): <input type="number" id="retentionYears" min="0"></label><br>
 
   <button id="saveProfileBtn">Save Profile</button>
-  <pre id="output"></pre>
 
   <script>
     document.getElementById("schedule").addEventListener("change", function () {

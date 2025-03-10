@@ -1,8 +1,9 @@
 import fs from 'fs';
 import { loadProfiles } from './loadProfile.js';
 import { createBatchFile } from './createBatchFile.js';
+import { deleteProfile } from './deleteProfile.js';
 
-export async function updateProfile(name, config, callback) {
+export async function updateProfile(name, originalName, config, callback) {
     if (!config) {
         callback("Error: config is undefined");
         return;
@@ -12,6 +13,10 @@ export async function updateProfile(name, config, callback) {
     
     try {
         const jsonString = JSON.stringify(config, null, 2);
+
+        if(name !== originalName){
+            deleteProfile(originalName, ()=>{});
+        }
 
         fs.writeFile(`./syncProfiles/${nameNoWhitespace}.txt`, jsonString, async function (err) {
             if (err) {

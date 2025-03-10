@@ -1,0 +1,12 @@
+{
+  "sessionUrl": "ftp://f4d5a89e3efb4eaa9904fc7c7f20ba32:ke5rNstOCy8gAlBMtqWFJE5LXQB9vXMw@eu-central-1.sftpcloud.io",
+  "remotePath": "/test/",
+  "localPath": "C:\\Users\\jorda\\Documents\\Profound\\transfer",
+  "logPath": "C:\\Users\\jorda\\Documents\\Profound\\logs\\newLog.log",
+  "connections": "4",
+  "schedule": {
+    "type": "never"
+  },
+  "fileMask": "",
+  "retentionYears": ""
+}

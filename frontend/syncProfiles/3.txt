@@ -1,7 +1,0 @@
-{
-  "sessionUrl": "ftp://kjh:kjh@kjhk",
-  "remotePath": "kjh",
-  "localPath": "kjh",
-  "logPath": "kjh",
-  "connections": "1"
-}

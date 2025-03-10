@@ -5,6 +5,11 @@ import {createBatchFilesBySchedule} from './updateScheduleBatchFiles.js'
 
 
 export async function saveProfile(name, config, callback) {
+    const profilesDirectory = `./syncProfiles`;
+    if (!fs.existsSync(profilesDirectory)) {
+          fs.mkdirSync(profilesDirectory, { recursive: true });
+    }
+    
     if (!config) {
         callback("Error: config is undefined");
         return;

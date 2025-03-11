@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { loadProfiles } from './loadProfile.js';
-import { createBatchFile } from './createBatchFile.js';
+import { createBatchFilesBySchedule } from './updateScheduleBatchFiles.js';
 import { deleteProfile } from './deleteProfile.js';
 
 export async function updateProfile(name, originalName, config, callback) {
@@ -27,7 +27,7 @@ export async function updateProfile(name, originalName, config, callback) {
                 const updatedProfiles = await loadProfiles();
                 
                 if (Array.isArray(updatedProfiles)) {
-                    createBatchFile(updatedProfiles);
+                    createBatchFilesBySchedule(updatedProfiles);
                 } else {
                     callback("Error: Expected profiles to be an array, but got:", updatedProfiles);
                 }

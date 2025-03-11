@@ -13,7 +13,12 @@ Synchronisation tool
 - [x] Add filters/masks  
 - [ ] Add emailing functionality  
 - [ ] Add SQL connection  
-- [ ] Update UI  
+- [ ] Update UI
+    -[x] Home page
+    -[ ] Profile page
 - [x] Add Update profile feature
 - [x] Add group profile selection
 - [x] Implement sync now functionality
+- [ ] Add next sync to profiles
+- [ ] Add last sync to profiles
+- [ ] Add delete confirmation

@@ -14,7 +14,7 @@ let profileWindow;
 
 app.whenReady().then(() => {
   mainWindow = new BrowserWindow({
-    width: 600,
+    width: 260,
     height: 500,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),

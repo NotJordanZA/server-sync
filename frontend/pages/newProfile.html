@@ -4,68 +4,115 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Profile</title>
+  <link rel="stylesheet" href="../styles/profile.css">
   <script defer src="../renderers/save-profile-renderer.js"></script>
 </head>
 <body>
-  <h2 id="newProfileHeading">Enter Profile Details</h2>
+  <!-- <h2 id="newProfileHeading">Enter Profile Details</h2> -->
 
-  <label>Profile Name: <input type="text" id="profile"></label><br>
-  <label>Host: <input type="text" id="host"></label><br>
-  <label>Username: <input type="text" id="username"></label><br>
-  <label>Password: <input type="text" id="password"></label><br>
-  <label>Local Directory: <input type="text" id="localDir"></label><br>
-  <label>Remote Directory: <input type="text" id="remoteDir"></label><br>
-  <label>Log Directory: <input type="text" id="logDir"></label><br>
-  <label>Threads: <input type="number" id="noConnections" min="1"></label><br>
+  <!-- Tab Navigation -->
+  <!-- <div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'General')" id="defaultOpen">General</button>
+    <button class="tablinks" onclick="openTab(event, 'Directories')">Directories</button>
+    <button class="tablinks" onclick="openTab(event, 'Backup')">Scheduling</button>
+    <button class="tablinks" onclick="openTab(event, 'Advanced')">Advanced</button>
+  </div> -->
+  <ul class="tabs group">
+    <li class="active"><a href="#" onclick="openTab(event, 'General')">General</a></li>
+    <li><a href="#" onclick="openTab(event, 'Directories')">Directories</a></li>
+    <li><a href="#" onclick="openTab(event, 'Backup')">Scheduling</a></li>
+    <li><a href="#" onclick="openTab(event, 'Advanced')">Advanced</a></li>
+  </ul>
 
-  <!-- Scheduling Options -->
-  <label>Schedule Backup:
-    <select id="schedule">
-      <option value="never">Never</option>
-      <option value="daily">Daily</option>
-      <option value="weekly">Weekly</option>
-      <option value="monthly">Monthly</option>
-      <option value="yearly">Yearly</option>
-    </select>
-  </label><br>
+  <!-- General Tab -->
+  <div id="General" class="tabcontent">
+    <label>Profile Name: <input type="text" id="profile"></label><br>
+    <label>Host: <input type="text" id="host"></label><br>
+    <label>Username: <input type="text" id="username"></label><br>
+    <label>Password: <input type="text" id="password"></label><br>
+  </div>
 
-  <!-- Dynamic Scheduling Inputs -->
-  <div id="scheduleDetails" style="display: none;">
-    <label id="scheduleLabel">Select Time:</label>
-    <input type="time" id="scheduleTime"><br>
+  <!-- Directories Tab -->
+  <div id="Directories" class="tabcontent">
+    <label>Local Directory: <input type="text" id="localDir"></label><br>
+    <label>Remote Directory: <input type="text" id="remoteDir"></label><br>
+    <label>Log Directory: <input type="text" id="logDir"></label><br>
+  </div>
 
-    <div id="weeklyOptions" style="display: none;">
-      <label>Day of the Week:
-        <select id="weeklyDay">
-          <option value="Sunday">Sunday</option>
-          <option value="Monday">Monday</option>
-          <option value="Tuesday">Tuesday</option>
-          <option value="Wednesday">Wednesday</option>
-          <option value="Thursday">Thursday</option>
-          <option value="Friday">Friday</option>
-          <option value="Saturday">Saturday</option>
-        </select>
-      </label><br>
-    </div>
+  <!-- Scheduling Tab -->
+  <div id="Backup" class="tabcontent">
+    <label>Schedule Backup:
+      <select id="schedule">
+        <option value="never">Never</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+        <option value="yearly">Yearly</option>
+      </select>
+    </label><br>
 
-    <div id="monthlyOptions" style="display: none;">
-      <label>Day of the Month: <input type="number" id="monthlyDay" min="1" max="31"></label><br>
-    </div>
+    <div id="scheduleDetails" style="display: none;">
+      <label id="scheduleLabel">Select Time:</label>
+      <input type="time" id="scheduleTime"><br>
 
-    <div id="yearlyOptions" style="display: none;">
-      <input type="datetime-local" id="yearlyDate"><br>
+      <div id="weeklyOptions" style="display: none;">
+        <label>Day of the Week:
+          <select id="weeklyDay">
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+        </label><br>
+      </div>
+
+      <div id="monthlyOptions" style="display: none;">
+        <label>Day of the Month: <input type="number" id="monthlyDay" min="1" max="31"></label><br>
+      </div>
+
+      <div id="yearlyOptions" style="display: none;">
+        <input type="datetime-local" id="yearlyDate"><br>
+      </div>
     </div>
   </div>
 
-  <!-- File Mask Filtering -->
-  <label>File Mask (e.g., *.tmp, !important.log): <input type="text" id="fileMask"></label><br>
-
-  <!-- Backup Retention -->
-  <label>Exclude Files Older Than (Years): <input type="number" id="retentionYears" min="0"></label><br>
+  <!-- Advanced Tab -->
+  <div id="Advanced" class="tabcontent">
+    <label>Threads: <input type="number" id="noConnections" min="1"></label><br>
+    <label>File Mask (e.g., *.tmp, !important.log): <input type="text" id="fileMask"></label><br>
+    <label>Exclude Files Older Than (Years): <input type="number" id="retentionYears" min="0"></label><br>
+  </div>
 
   <button id="saveProfileBtn">Save Profile</button>
 
   <script>
+    // Function to switch tabs
+    function openTab(evt, tabName) {
+      var i, tabcontent, tabs;
+      // Hide all tab contents
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      // Remove active class from all tabs
+      tabs = document.querySelectorAll(".tabs li");
+      for (i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove("active");
+      }
+      // Show selected tab content
+      document.getElementById(tabName).style.display = "block";
+      // Add active class to the clicked tab’s parent li
+      evt.currentTarget.parentElement.classList.add("active");
+    }
+    // Open default tab
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("General").style.display = "block";
+    });
+
+    // Scheduling Options Event Handler
     document.getElementById("schedule").addEventListener("change", function () {
       const scheduleDetails = document.getElementById("scheduleDetails");
       const timeInput = document.getElementById("scheduleTime");
@@ -74,35 +121,32 @@
       const yearlyOptions = document.getElementById("yearlyOptions");
       const scheduleLabel = document.getElementById("scheduleLabel");
 
-      // Hide all by default
+      // Hide all scheduling inputs initially
       scheduleDetails.style.display = "none";
       timeInput.style.display = "none";
       weeklyOptions.style.display = "none";
       monthlyOptions.style.display = "none";
       yearlyOptions.style.display = "none";
 
-      // Show relevant options
+      // Show inputs based on the selected schedule option
       switch (this.value) {
         case "daily":
           scheduleDetails.style.display = "block";
           timeInput.style.display = "inline-block";
           scheduleLabel.innerText = "Select Time:";
           break;
-
         case "weekly":
           scheduleDetails.style.display = "block";
           timeInput.style.display = "inline-block";
           weeklyOptions.style.display = "block";
           scheduleLabel.innerText = "Select Time:";
           break;
-
         case "monthly":
           scheduleDetails.style.display = "block";
           timeInput.style.display = "inline-block";
           monthlyOptions.style.display = "block";
           scheduleLabel.innerText = "Select Time:";
           break;
-
         case "yearly":
           scheduleDetails.style.display = "block";
           yearlyOptions.style.display = "block";
@@ -111,6 +155,5 @@
       }
     });
   </script>
-
 </body>
 </html>

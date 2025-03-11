@@ -5,15 +5,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         const profileContainer = document.createElement('div');
         const profileInfoContainer = document.createElement('div');
 
+        const checkLabel = document.createElement('label');
         const checkBox = document.createElement('input');
+        const checkSpan = document.createElement('span');
         const profileHeading = document.createElement('h3');
-        const profileSession = document.createElement('p');
+        const lastSync = document.createElement('p');
+        const nextSync = document.createElement('p');
+        const lastSyncSpan = document.createElement('span');
+        const nextSyncSpan = document.createElement('span');
         const deleteButton = document.createElement('button');
         const updateButton = document.createElement('button');
 
+        profileContainer.className = "profileContainer";
+        profileInfoContainer.className = "profileInfoContainer";
+        checkBox.className = "checkbox";
+        profileHeading.className = "profileHeading";
+        lastSync.className = "syncDetail";
+        nextSync.className = "syncDetail";
+        deleteButton.className = "deleteButton";
+        updateButton.className = "updateButton";
+
+        checkLabel.htmlFor = `profileCheck_${profile.name}`;
+        // checkLabel.style.cursor = "pointer";
         checkBox.type = "checkbox";
+        checkBox.id = `profileCheck_${profile.name}`;
+        checkSpan.className = "checkmark";
         profileHeading.textContent = profile.name;
-        profileSession.textContent = profile.profileJSON.sessionUrl;
+        lastSync.textContent = "Last Sync: ";
+        nextSync.textContent = "Next Sync: ";
+        lastSyncSpan.textContent = "Never";
+        nextSyncSpan.textContent = "Unscheduled";
         deleteButton.textContent = "Delete";
         updateButton.textContent = "Edit";
 
@@ -24,32 +45,53 @@ document.addEventListener("DOMContentLoaded", async () => {
             window.electronAPI.openUpdateProfile(profile.name);
         });
 
+        lastSync.appendChild(lastSyncSpan);
+        nextSync.appendChild(nextSyncSpan);
+
         profileInfoContainer.appendChild(profileHeading);
-        profileInfoContainer.appendChild(profileSession);
+        profileInfoContainer.appendChild(lastSync);
+        profileInfoContainer.appendChild(nextSync);
         profileInfoContainer.appendChild(updateButton);
         profileInfoContainer.appendChild(deleteButton);
 
         profileContainer.appendChild(checkBox);
+        profileContainer.appendChild(checkSpan);
         profileContainer.appendChild(profileInfoContainer);
+        checkLabel.appendChild(profileContainer);
 
-        profileList.appendChild(profileContainer);
+        profileList.appendChild(checkLabel);
     }
 });
 
 document.getElementById("syncBtn").addEventListener("click", () => {
     const profileList = document.getElementById("profileList");
 
-    // console.log(profileList.children[0].children[0].checked);
     const profilesToSync = [];
 
     for (const profile of profileList.children) {
-        checked = profile.children[0].checked;
+        checked = profile.children[0].children[0].checked;
         if(checked){
-            profilesToSync.push(profile.children[1].children[0].textContent);
+            profilesToSync.push(profile.children[0].children[2].children[0].textContent);
         }
     }
-    // console.log(profilesToSync);
-    window.electronAPI.syncProfiles(profilesToSync);
+    console.log(profilesToSync);
+    // window.electronAPI.syncProfiles(profilesToSync);
+});
+
+document.getElementById("selectAllBtn").addEventListener("click", () => {
+    const profileList = document.getElementById("profileList");
+    var checkCount = false;
+    for (const profile of profileList.children) {
+        if(!profile.children[0].children[0].checked){
+            profile.children[0].children[0].click();
+            checkCount = true;
+        }
+    }
+    if(!checkCount){
+        for (const profile of profileList.children) {
+            profile.children[0].children[0].click();
+        }
+    }
 });
 
 // Listen for PowerShell output

@@ -1,0 +1,119 @@
+html{
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(236, 236, 236);
+}
+
+body{
+    height: 100%;
+    /* margin: 15px; */
+    overflow: hidden;
+}
+
+.headerButtons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#profileList{
+    margin-top: 10px;
+    /* margin-bottom: 15px; */
+    height: 90vh;
+    /* margin-right: 5px; */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* width: calc(100% - 8px); */
+}
+
+.profileContainer{
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    background-color: rgb(221, 226, 224);
+    padding: 5px;
+    box-shadow: 0px 1px rgba(0,0,0,0.1); 
+    height: 73px;
+    /* position: relative; */
+}
+
+.profileHeading{
+    /* margin: 5px 0 5px 0; */
+    margin: 0;
+    margin-bottom: 2px;
+}
+
+.syncDetail{
+    /* margin: 5px 0 5px 0; */
+    margin: 0;
+    color: #4e4e4e;
+    word-wrap: break-word;
+    overflow: hidden;
+    font-size: 0.9rem;
+}
+
+.syncDetail span{
+    font-weight: bold;
+}
+
+/* .checkbox{
+
+} */
+
+button{
+    padding: 4px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ccc;
+    color: rgb(41, 41, 41);
+   
+    cursor: pointer;
+    box-shadow: 0px 1px rgba(0,0,0,0.2); 
+}
+
+button:hover {
+    background-color: #aaaaaa;
+}
+
+.profileContainer button{
+    margin-right: 4px;
+}
+
+/* Hide the browser's default checkbox */
+.profileContainer input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+  
+/* Create a custom checkbox */
+.checkmark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    width: 25px;
+    background-color: #ccc;
+    margin: -5px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0px 1px rgba(0,0,0,0.1); 
+}
+
+/* On mouse-over, add a grey background color */
+.profileContainer:hover input ~ .checkmark {
+    background-color: #aaaaaa;
+}
+
+/* When the checkbox is checked, add a blue background */
+.profileContainer input:checked ~ .checkmark {
+    background-color: #4f95ff;
+}

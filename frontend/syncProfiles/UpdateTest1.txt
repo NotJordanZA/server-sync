@@ -6,7 +6,7 @@
   "connections": "2",
   "schedule": {
     "type": "daily",
-    "time": "10:00"
+    "time": "11:00"
   },
   "fileMask": "*.tmp",
   "retentionYears": "5"

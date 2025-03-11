@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FTP Sync GUI</title>
+  <title>Server Sync</title>
   <script defer src="renderers/renderer.js"></script>
+  <link rel="stylesheet" href="./styles/main.css">
 </head>
 <body>
-  <h2>Server Sync</h2>
-  <button id="syncBtn">Sync Now</button>
-  <button id="newProfileBtn">New Profile</button>
+  <!-- <h2>Server Sync</h2> -->
+  <div class="headerButtons">
+    <button id="selectAllBtn">Select All</button>
+    <button id="syncBtn">Sync Now</button>
+    <button id="newProfileBtn">New Profile</button>
+  </div>
   <div id="profileList"></div>
   <pre id="output"></pre>
 </body>

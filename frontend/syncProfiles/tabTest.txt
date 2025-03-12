@@ -1,0 +1,12 @@
+{
+  "sessionUrl": "ftp://asd:asd@asd",
+  "remotePath": "asd",
+  "localPath": "asd",
+  "logPath": "asd",
+  "connections": "3",
+  "schedule": {
+    "type": "never"
+  },
+  "fileMask": "",
+  "retentionYears": ""
+}

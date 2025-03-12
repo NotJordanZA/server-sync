@@ -1,6 +1,5 @@
 window.electronAPI.onUpdateProfilePageLoad((config) => {
     document.getElementById("saveProfileBtn").textContent = "Update Profile";
-    document.getElementById("newProfileHeading").textContent = "Update Profile Details";
     document.getElementById("saveProfileBtn").onclick = () => handleProfileSave(true, config.name);
 
     const profile = document.getElementById("profile");

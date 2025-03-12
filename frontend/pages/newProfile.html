@@ -9,14 +9,6 @@
 </head>
 <body>
   <!-- <h2 id="newProfileHeading">Enter Profile Details</h2> -->
-
-  <!-- Tab Navigation -->
-  <!-- <div class="tab">
-    <button class="tablinks" onclick="openTab(event, 'General')" id="defaultOpen">General</button>
-    <button class="tablinks" onclick="openTab(event, 'Directories')">Directories</button>
-    <button class="tablinks" onclick="openTab(event, 'Backup')">Scheduling</button>
-    <button class="tablinks" onclick="openTab(event, 'Advanced')">Advanced</button>
-  </div> -->
   <ul class="tabs group">
     <li class="active"><a href="#" onclick="openTab(event, 'General')">General</a></li>
     <li><a href="#" onclick="openTab(event, 'Directories')">Directories</a></li>
@@ -26,22 +18,22 @@
 
   <!-- General Tab -->
   <div id="General" class="tabcontent">
-    <label>Profile Name: <input type="text" id="profile"></label><br>
-    <label>Host: <input type="text" id="host"></label><br>
-    <label>Username: <input type="text" id="username"></label><br>
-    <label>Password: <input type="text" id="password"></label><br>
+    <label class="field-label"><p>Profile Name</p> <input type="text" id="profile" required></label><br>
+    <label class="field-label"><p>Host</p> <input type="text" id="host" required></label><br>
+    <label class="field-label"><p>Username</p> <input type="text" id="username" required></label><br>
+    <label class="field-label"><p>Password</p> <input type="text" id="password" required></label><br>
   </div>
 
   <!-- Directories Tab -->
   <div id="Directories" class="tabcontent">
-    <label>Local Directory: <input type="text" id="localDir"></label><br>
-    <label>Remote Directory: <input type="text" id="remoteDir"></label><br>
-    <label>Log Directory: <input type="text" id="logDir"></label><br>
+    <label class="field-label"><p>Local Directory</p> <input type="text" id="localDir" required></label><br>
+    <label class="field-label"><p>Remote Directory</p> <input type="text" id="remoteDir" required></label><br>
+    <label class="field-label"><p>Log Directory</p> <input type="text" id="logDir"></label><br>
   </div>
 
   <!-- Scheduling Tab -->
-  <div id="Backup" class="tabcontent">
-    <label>Schedule Backup:
+<div id="Backup" class="tabcontent">
+    <label class="field-label"><p>Schedule Backup</p>
       <select id="schedule">
         <option value="never">Never</option>
         <option value="daily">Daily</option>
@@ -52,38 +44,47 @@
     </label><br>
 
     <div id="scheduleDetails" style="display: none;">
-      <label id="scheduleLabel">Select Time:</label>
-      <input type="time" id="scheduleTime"><br>
 
+      <div id="yearlyOptions" style="display: none;">
+        <label class="field-label">
+          <p>Select Date and Time</p>
+          <input type="datetime-local" id="yearlyDate">
+        </label><br>
+      </div>
+
+      <label class="field-label" id="scheduleLabel" style="display: none;"><p>Time</p>
+        <input type="time" id="scheduleTime" class="field-label"/>
+      </label><br>
       <div id="weeklyOptions" style="display: none;">
-        <label>Day of the Week:
+        <label class="field-label"><p>Day of the Week:</p>
           <select id="weeklyDay">
-            <option value="Sunday">Sunday</option>
             <option value="Monday">Monday</option>
             <option value="Tuesday">Tuesday</option>
             <option value="Wednesday">Wednesday</option>
             <option value="Thursday">Thursday</option>
             <option value="Friday">Friday</option>
             <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
           </select>
         </label><br>
       </div>
 
       <div id="monthlyOptions" style="display: none;">
-        <label>Day of the Month: <input type="number" id="monthlyDay" min="1" max="31"></label><br>
+        <label class="field-label">
+          <p>Day of the Month</p>
+          <input type="number" id="monthlyDay" min="1" max="31">
+        </label><br>
       </div>
 
-      <div id="yearlyOptions" style="display: none;">
-        <input type="datetime-local" id="yearlyDate"><br>
-      </div>
+      
     </div>
   </div>
 
   <!-- Advanced Tab -->
   <div id="Advanced" class="tabcontent">
-    <label>Threads: <input type="number" id="noConnections" min="1"></label><br>
-    <label>File Mask (e.g., *.tmp, !important.log): <input type="text" id="fileMask"></label><br>
-    <label>Exclude Files Older Than (Years): <input type="number" id="retentionYears" min="0"></label><br>
+    <label class="field-label"><p>Connections</p> <input type="number" id="noConnections" min="1" value=1></label><br>
+    <label class="field-label"><p>File Mask (e.g., *.tmp, !important.log)</p> <input type="text" id="fileMask"></label><br>
+    <label class="field-label"><p>Exclude Files Older Than (Years)</p> <input type="number" id="retentionYears" min="0"></label><br>
   </div>
 
   <button id="saveProfileBtn">Save Profile</button>
@@ -127,30 +128,30 @@
       weeklyOptions.style.display = "none";
       monthlyOptions.style.display = "none";
       yearlyOptions.style.display = "none";
+      scheduleLabel.style.display = "none";
 
       // Show inputs based on the selected schedule option
       switch (this.value) {
         case "daily":
           scheduleDetails.style.display = "block";
-          timeInput.style.display = "inline-block";
-          scheduleLabel.innerText = "Select Time:";
+          timeInput.style.display = "block";
+          scheduleLabel.style.display = "block";
           break;
         case "weekly":
           scheduleDetails.style.display = "block";
-          timeInput.style.display = "inline-block";
+          timeInput.style.display = "block";
           weeklyOptions.style.display = "block";
-          scheduleLabel.innerText = "Select Time:";
+          scheduleLabel.style.display = "block";
           break;
         case "monthly":
           scheduleDetails.style.display = "block";
-          timeInput.style.display = "inline-block";
+          timeInput.style.display = "block";
           monthlyOptions.style.display = "block";
-          scheduleLabel.innerText = "Select Time:";
+          scheduleLabel.style.display = "block";
           break;
         case "yearly":
           scheduleDetails.style.display = "block";
           yearlyOptions.style.display = "block";
-          scheduleLabel.innerText = "Select Date & Time:";
           break;
       }
     });

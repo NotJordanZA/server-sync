@@ -13,9 +13,9 @@ Synchronisation tool
 - [x] Add filters/masks  
 - [ ] Add emailing functionality  
 - [ ] Add SQL connection  
-- [ ] Update UI
+- [x] Update UI
     -[x] Home page
-    -[ ] Profile page
+    -[x] Profile page
 - [x] Add Update profile feature
 - [x] Add group profile selection
 - [x] Implement sync now functionality

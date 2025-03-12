@@ -26,7 +26,7 @@ app.whenReady().then(() => {
   ipcMain.on("open-profile", () => {
     if (!profileWindow) {
       profileWindow = new BrowserWindow({
-        width: 500,
+        width: 451,
         height: 400,
         parent: mainWindow, // Makes it a child window
         modal: true, // Blocks interaction with mainWindow when open
@@ -59,7 +59,7 @@ ipcMain.on('close-profile', () => {
 ipcMain.on("open-update-profile", async(event, profileName) => {
   if (!profileWindow) {
     profileWindow = new BrowserWindow({
-      width: 500,
+      width: 451,
       height: 400,
       parent: mainWindow, // Makes it a child window
       modal: true, // Blocks interaction with mainWindow when open

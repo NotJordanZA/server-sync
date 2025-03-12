@@ -16,4 +16,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   onDeleteProfileOutput: (callback) => ipcRenderer.on("delete-profile-output", (event, data) => callback(data)),
   showMessage: (type, title, message) => ipcRenderer.invoke("show-message", { type, title, message }),
   syncProfiles: (profiles) => ipcRenderer.send("sync-profiles", profiles),
+  showDeleteMessage: (message) => ipcRenderer.invoke("show-delete-message", { message }),
+  onDeleteMessageResponse: (callback) => ipcRenderer.on("delete-message-response", (event, data) => callback(data)),
 });

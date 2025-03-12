@@ -97,6 +97,17 @@ ipcMain.handle("show-message", async (event, { type, title, message }) => {
   });
 });
 
+// Delete message dialogue box
+ipcMain.handle("show-delete-message", async (event, {message}) => {
+  const response = await dialog.showMessageBox(mainWindow, {
+      type:"warning", 
+      title:"Are you sure?",
+      message,
+      buttons: ["Yes", "Cancel"]
+  });
+  return response;
+});
+
 // Handle PowerShell execution from frontend
 ipcMain.on("run-powershell", (event, command) => {
   runPowerShell(command, (output) => {

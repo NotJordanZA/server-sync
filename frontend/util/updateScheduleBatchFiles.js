@@ -49,27 +49,16 @@ export function createBatchFilesBySchedule(profiles) {
   });
 
   // For each schedule group that exists, build/update the batch file and register a scheduled task.
-  Object.keys(scheduleGroups).forEach(safeKey => {
+  Object.keys(scheduleGroups).forEach(async safeKey => {
     const profilesInGroup = scheduleGroups[safeKey];
     const batchFilePath = path.join(scheduleDir, `${safeKey}.bat`);
     let contents = `@echo off\r\n`;
 
-    profilesInGroup.forEach(async profile => {
-      // const sessionUrl = `-sessionUrl ${profile.profileJSON.sessionUrl}`;
-      // const remotePath = `-remotePath "${profile.profileJSON.remotePath}"`;
-      // const localPath = `-localPath "${profile.profileJSON.localPath}"`;
-      // const logPath = `-logPath "${profile.profileJSON.logPath}"`;
-      // const connections = `-connections ${profile.profileJSON.connections}`;
-      // const commandArgs = `${sessionUrl} ${remotePath} ${localPath} ${logPath} ${connections}`;
-
-      // contents += `::${profile.name}\r\n`;
-      // const psScriptPath = path.join(__dirname, "scripts", "multithreadedsync.ps1");
-      // const baseCommand = `powershell.exe -ExecutionPolicy Bypass -File "${psScriptPath}"`;
+    for (const profile of profilesInGroup) {
       const command = await constructPowershellCommand(profile.name);
       contents += `::${profile.name}\r\n`;
       contents += `${command}\r\n`;
-    });
-
+    }
     fs.writeFile(batchFilePath, contents, function (err) {
       if (err) {
         console.log(`Error: ${err}`);
@@ -118,19 +107,18 @@ export function createBatchFilesBySchedule(profiles) {
 
   console.log(`Scheduled task "${taskName}" updated:`);
     // Execute the schtasks command to create/update the scheduled task.
-  //   exec(schtasksCmd, (error, stdout, stderr) => {
-  //     if (error) {
-  //       console.error(`Error scheduling task for ${safeKey}:`, error);
-  //     } else {
-  //       console.log(`Scheduled task "${taskName}" updated:`, stdout);
-  //     }
-  //   });
+    // exec(schtasksCmd, (error, stdout, stderr) => {
+    //   if (error) {
+    //     console.error(`Error scheduling task for ${safeKey}:`, error);
+    //   } else {
+    //     console.log(`Scheduled task "${taskName}" updated:`, stdout);
+    //   }
+    // });
   });
 
   // Clear out batch files in the schedules folder that are no longer needed
   const existingBatchFiles = fs.readdirSync(scheduleDir).filter(file => file.endsWith('.bat'));
   const currentKeys = new Set(Object.keys(scheduleGroups));
-
   existingBatchFiles.forEach(file => {
     const key = file.replace('.bat', '');
     if (!currentKeys.has(key)) {

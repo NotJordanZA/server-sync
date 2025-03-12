@@ -38,8 +38,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         deleteButton.textContent = "Delete";
         updateButton.textContent = "Edit";
 
-        deleteButton.addEventListener("click", () => {
-            window.electronAPI.deleteProfile(profile.name);
+        deleteButton.addEventListener("click", async() => {
+            const response = await window.electronAPI.showDeleteMessage(`Are you sure you want to delete ${profile.name}?`);
+            if(response.response === 0){
+                window.electronAPI.deleteProfile(profile.name);
+            }
         });
         updateButton.addEventListener("click", () => {
             window.electronAPI.openUpdateProfile(profile.name);

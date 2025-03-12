@@ -3,5 +3,10 @@
   "remotePath": "kjh",
   "localPath": "kjh",
   "logPath": "kjh",
-  "connections": "1"
+  "connections": "1",
+  "schedule": {
+    "type": "never"
+  },
+  "fileMask": "",
+  "retentionYears": ""
 }

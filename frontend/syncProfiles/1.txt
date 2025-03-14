@@ -8,5 +8,6 @@
     "type": "never"
   },
   "fileMask": "",
-  "retentionYears": ""
+  "retentionYears": "",
+  "email": "undefined"
 }

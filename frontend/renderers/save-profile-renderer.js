@@ -14,6 +14,12 @@ window.electronAPI.onUpdateProfilePageLoad((config) => {
     const scheduleDetails = document.getElementById("scheduleDetails");
     const fileMask = document.getElementById("fileMask");
     const retentionYears = document.getElementById("retentionYears");
+    const email = document.getElementById("email");
+    const timeInput = document.getElementById("scheduleTime");
+    const weeklyOptions = document.getElementById("weeklyOptions");
+    const monthlyOptions = document.getElementById("monthlyOptions");
+    const yearlyOptions = document.getElementById("yearlyOptions");
+    const scheduleLabel = document.getElementById("scheduleLabel");
 
     profile.value = config.name;
 
@@ -27,6 +33,7 @@ window.electronAPI.onUpdateProfilePageLoad((config) => {
     remoteDir.value = config.profileJSON.remotePath;
     logDir.value = config.profileJSON.logPath;
     noConnections.value = config.profileJSON.connections;
+    email.value = config.profileJSON.email;
 
     if(config.profileJSON.schedule){
         const schedule = config.profileJSON.schedule;
@@ -34,17 +41,30 @@ window.electronAPI.onUpdateProfilePageLoad((config) => {
         if (schedule.type === "daily") {
             scheduleType.value = "daily";
             document.getElementById("scheduleTime").value = schedule.time;
+            scheduleDetails.style.display = "block";
+            timeInput.style.display = "block";
+            scheduleLabel.style.display = "block";
         } else if (schedule.type === "weekly") {
             scheduleType.value = "weekly";
             document.getElementById("scheduleTime").value = schedule.time;
             document.getElementById("weeklyDay").value = schedule.day;ElementById("scheduleTime").value;
+            scheduleDetails.style.display = "block";
+            timeInput.style.display = "block";
+            weeklyOptions.style.display = "block";
+            scheduleLabel.style.display = "block";
         } else if (schedule.type === "monthly") {
             scheduleType.value = "monthly";
             document.getElementById("scheduleTime").value = schedule.time;
             document.getElementById("monthlyDay").value = schedule.day;
+            scheduleDetails.style.display = "block";
+            timeInput.style.display = "block";
+            monthlyOptions.style.display = "block";
+            scheduleLabel.style.display = "block";
         } else if (schedule.type === "yearly") {
             scheduleType.value = "yearly";
             document.getElementById("yearlyDate").value = schedule.dateTime;
+            scheduleDetails.style.display = "block";
+            yearlyOptions.style.display = "block";
         }else if(schedule.type == "never"){
             scheduleType.value = "never";
             scheduleDetails.style.display = "none";
@@ -67,6 +87,7 @@ function handleProfileSave(isUpdate = false, originalName = null) {
     const scheduleType = document.getElementById("schedule").value;
     const fileMask = document.getElementById("fileMask").value;
     const retentionYears = document.getElementById("retentionYears").value;
+    const email = document.getElementById("email").value;
 
     let scheduleDetails = {};
     if (scheduleType === "daily") {
@@ -89,7 +110,8 @@ function handleProfileSave(isUpdate = false, originalName = null) {
         connections: noConnections,
         schedule: scheduleDetails,
         fileMask: fileMask,
-        retentionYears: retentionYears
+        retentionYears: retentionYears,
+        email: email,
     };
 
     if (isUpdate) {

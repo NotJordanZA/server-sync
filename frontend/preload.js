@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   openNewProfile: () => ipcRenderer.send("open-profile"),
   closeProfile: () => ipcRenderer.send("close-profile"),
   getProfiles: () => ipcRenderer.invoke("get-profiles"),
+  getLastSync: (profile) => ipcRenderer.invoke("get-last-sync", profile),
   saveProfile: (name, config) => ipcRenderer.send("save-profile", name, config),
   onSaveProfileOutput: (callback) => ipcRenderer.on("save-profile-output", (event, data) => callback(data)),
   deleteProfile: (name) => ipcRenderer.send("delete-profile", name),

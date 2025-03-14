@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from "url";
 import { constructPowershellCommand } from './createPowershellCommand.js';
+import 'dotenv/config'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,12 +54,22 @@ export function createBatchFilesBySchedule(profiles) {
     const profilesInGroup = scheduleGroups[safeKey];
     const batchFilePath = path.join(scheduleDir, `${safeKey}.bat`);
     let contents = `@echo off\r\n`;
+    const psDateScriptPath = path.join(__dirname, "../scripts", "writeDateToLog.ps1");
+    const scheduleLogPath = path.join(__dirname, "../scheduleLogs", `${safeKey}_log.txt`);
+    const dateLogCommand = `pwsh.exe -ExecutionPolicy Bypass -File "${psDateScriptPath}" -scheduleLogPath "${scheduleLogPath}"`;
+    contents += `::logDate\r\n${dateLogCommand}\r\n`;
 
     for (const profile of profilesInGroup) {
       const command = await constructPowershellCommand(profile.name);
       contents += `::${profile.name}\r\n`;
       contents += `${command}\r\n`;
     }
+
+    const psEmailScriptPath = path.join(__dirname, "../scripts", "sendEmails.ps1");
+    const emailCommand = `pwsh.exe -ExecutionPolicy Bypass -File "${psEmailScriptPath}" -scheduleLogPath "${scheduleLogPath}" -MailgunApiKey "${process.env.MAILGUN_API_KEY}" -MailgunDomain "${process.env.MAILGUN_DOMAIN}" -MailgunFromAddress "${process.env.MAILGUN_ADDRESS}"`;
+    contents += `::Email Script\r\n`;
+    contents += `${emailCommand}\r\n`;
+
     fs.writeFile(batchFilePath, contents, function (err) {
       if (err) {
         console.log(`Error: ${err}`);

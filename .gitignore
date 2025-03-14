@@ -131,6 +131,7 @@ dist
 
 # Mac files
 .DS_Store
-client/env
-.DS_Store
-.DS_Store
+
+# Project specific
+scheduleLogs/
+schedules/

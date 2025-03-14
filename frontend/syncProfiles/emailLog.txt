@@ -1,12 +1,14 @@
 {
-  "sessionUrl": "ftp://7af58e4853884b3ba3b95dca4d64afb8:e5V4A5gG8RmGIPkKtD4W3hjxmMadns5V@eu-central-1.sftpcloud.io",
+  "sessionUrl": "ftp://ef59c59db72049ffb03e9fcf38f67613:y8kkdioY2hmJkINd35FpcKTwqceY4PH2@eu-central-1.sftpcloud.io",
   "remotePath": "/test/",
   "localPath": "C:\\Users\\jorda\\Documents\\Profound\\transfer",
   "logPath": "C:\\Users\\jorda\\Documents\\Profound\\logs\\newLog.log",
   "connections": "4",
   "schedule": {
-    "type": "never"
+    "type": "daily",
+    "time": "16:00"
   },
   "fileMask": "",
-  "retentionYears": ""
+  "retentionYears": "",
+  "email": "jordan@profound.co.za"
 }

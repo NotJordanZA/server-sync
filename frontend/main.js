@@ -8,6 +8,7 @@ const {deleteProfile} = require("./util/deleteProfile");
 const {createBatchFilesBySchedule} = require("./util/updateScheduleBatchFiles");
 const { updateProfile } = require("./util/updateProfile");
 const { syncProfiles } = require("./util/syncProfiles");
+const { extractLastSync } = require("./util/extractLastSync");
 
 let mainWindow;
 let profileWindow;
@@ -101,7 +102,7 @@ ipcMain.handle("show-message", async (event, { type, title, message }) => {
 ipcMain.handle("show-delete-message", async (event, {message}) => {
   const response = await dialog.showMessageBox(mainWindow, {
       type:"warning", 
-      title:"Are you sure?",
+      title:"Server Sync",
       message,
       buttons: ["Yes", "Cancel"]
   });
@@ -147,10 +148,14 @@ ipcMain.handle("get-profiles", async () => {
 
 // Handle profiles sync
 ipcMain.on("sync-profiles", (event, profiles) =>{
-  // console.log(profiles);
   syncProfiles(profiles);
-  // console.log("Called");
 });
+
+// Handle get last-sync
+ipcMain.handle("get-last-sync", (event, profile) =>{
+  return extractLastSync(profile);
+});
+
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });

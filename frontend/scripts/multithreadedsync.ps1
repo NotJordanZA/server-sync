@@ -1,16 +1,33 @@
 param (
+    [Parameter(Mandatory=$true)] [string]$profileName,
     [Parameter(Mandatory=$true)] [string]$sessionUrl,
     [Parameter(Mandatory=$true)] [string]$remotePath,
     [Parameter(Mandatory=$true)] [string]$localPath,
     [Parameter(Mandatory=$true)] [string]$logPath,
+    [Parameter(Mandatory=$true)] [string]$internalLogPath,
+    [Parameter(Mandatory=$true)] [string]$scheduleLogPath,
     [Parameter(Mandatory=$true)] [string]$fileMask,
-    [Parameter(Mandatory=$true)] [int]$connections
+    [Parameter(Mandatory=$true)] [int]$connections,
+    [Parameter(Mandatory=$true)] [string]$email
 )
- 
+
+function Write-Log {
+    param (
+        [string]$message
+    )
+    if($scheduleLogPath -ne " "){
+        Add-Content -Path $scheduleLogPath -Value "$message"
+    }
+}
+
+Start-Transcript -Path $internalLogPath -Append
+
 try
 {
+    Write-Log "$profileName"
+    Write-Log "$email"
     # $assemblyFilePath = "C:\Program Files (x86)\WinSCP\netstandard2.0\WinSCPnet.dll"
-    $assemblyFilePath = ".\winscp\WinSCPnet.dll"
+    $assemblyFilePath = Join-Path $PSScriptRoot "..\winscp\WinSCPnet.dll"
     # Load WinSCP .NET assembly
     Add-Type -Path $assemblyFilePath
  
@@ -53,7 +70,10 @@ try
         )
         if ($differences.Count -eq 0)
         {
-            Write-Host "No changes found."   
+            Write-Host "No changes found."
+            Write-Host "Done"
+            Write-Host "Finished: $(Get-Date)"
+            Write-Log "Done"   
         }
         else
         {
@@ -110,6 +130,8 @@ try
             Get-Job | Receive-Job -Wait -ErrorAction Stop
      
             Write-Host "Done"
+            Write-Host "Finished: $(Get-Date)"
+            Write-Log "Done"
         }
  
         $ended = Get-Date
@@ -127,5 +149,9 @@ try
 catch
 {
     Write-Host "Error: $($_.Exception.Message)"
+    Write-Host "Finished: $(Get-Date)"
+    Write-Log "Error"
     exit 1
 }
+
+Stop-Transcript

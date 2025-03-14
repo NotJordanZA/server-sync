@@ -1,9 +1,8 @@
 import { exec } from "child_process";
 
 export function runPowerShell(command) {
-  console.log("Executing:", command);
+  // console.log("Executing:", command);
   return new Promise((resolve, reject) => {
-    // Increase maxBuffer if you expect a lot of output
     exec(command, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
       if (error) {
         console.error("Execution error:", error);

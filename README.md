@@ -12,6 +12,9 @@ Synchronisation tool
 - [x] Group batch files by schedule (all daily 8pm in same .bat etc.)
 - [x] Add filters/masks  
 - [ ] Add emailing functionality  
+    -[ ] Send summary emails grouped by schedule and supplied email
+        -[x] Create grouped logs
+        -[ ] Create email script
 - [ ] Add SQL connection  
 - [x] Update UI
     -[x] Home page
@@ -19,6 +22,8 @@ Synchronisation tool
 - [x] Add Update profile feature
 - [x] Add group profile selection
 - [x] Implement sync now functionality
-- [ ] Add next sync to profiles
-- [ ] Add last sync to profiles
-- [ ] Add delete confirmation
+- [x] Add next sync to profiles
+- [x] Add last sync to profiles
+- [x] Add delete confirmation
+- [ ] Add syncing animation (breathing toggle)
+- [ ] Prevent action while syncing

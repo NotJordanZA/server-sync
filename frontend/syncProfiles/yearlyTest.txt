@@ -1,0 +1,13 @@
+{
+  "sessionUrl": "ftp://jlkj:lkj@jkol",
+  "remotePath": "lkj",
+  "localPath": "lkj",
+  "logPath": "lkj",
+  "connections": "1",
+  "schedule": {
+    "type": "yearly",
+    "dateTime": "2025-03-12T15:11"
+  },
+  "fileMask": "",
+  "retentionYears": ""
+}

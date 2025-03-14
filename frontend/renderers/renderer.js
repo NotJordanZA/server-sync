@@ -32,9 +32,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         checkSpan.className = "checkmark";
         profileHeading.textContent = profile.name;
         lastSync.textContent = "Last Sync: ";
-        nextSync.textContent = "Next Sync: ";
-        lastSyncSpan.textContent = "Never";
-        nextSyncSpan.textContent = "Unscheduled";
+        nextSync.textContent = `Next Sync: `;
+        lastSyncSpan.textContent = await window.electronAPI.getLastSync(profile.name);
+        nextSyncSpan.textContent = getNextSyncDate(profile.profileJSON.schedule);
         deleteButton.textContent = "Delete";
         updateButton.textContent = "Edit";
 
@@ -77,8 +77,8 @@ document.getElementById("syncBtn").addEventListener("click", () => {
             profilesToSync.push(profile.children[0].children[2].children[0].textContent);
         }
     }
-    console.log(profilesToSync);
-    // window.electronAPI.syncProfiles(profilesToSync);
+    // console.log(profilesToSync);
+    window.electronAPI.syncProfiles(profilesToSync);
 });
 
 document.getElementById("selectAllBtn").addEventListener("click", () => {
@@ -105,3 +105,55 @@ window.electronAPI.onPowerShellOutput((data) => {
 document.getElementById("newProfileBtn").addEventListener("click", () => {
     window.electronAPI.openNewProfile();
 });
+
+function getNextSyncDate(schedule) {
+    if (!schedule || schedule.type === "never") {
+      return "Unscheduled";
+    }
+
+    const now = new Date();
+    var nextSync;
+
+    if(schedule.type === "daily"){
+        const time = schedule.time.split(":");
+        const todaySchedule = new Date(now.getFullYear(), now.getMonth(), now.getDate(), time[0], time[1]);
+        if (now > todaySchedule) {
+            todaySchedule.setDate(todaySchedule.getDate() + 1);
+        }
+        nextSync = todaySchedule;
+    }else if(schedule.type === "weekly"){
+        const time = schedule.time.split(":");
+        const day = schedule.day;
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        var targetDay = days.indexOf(day.toLowerCase());
+        const offset = targetDay - now.getDay();
+        const dayInWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate(), time[0], time[1]);
+        dayInWeek.setDate(dayInWeek.getDate()-offset);
+        if (now > dayInWeek) {
+            dayInWeek.setDate(dayInWeek.getDate() + 7); 
+        }
+        nextSync = dayInWeek;
+    }else if(schedule.type === "monthly"){
+        const time = schedule.time.split(":");
+        const day = schedule.day;
+        const dayInMonth = new Date(now.getFullYear(), now.getMonth(), now.getDate(), time[0], time[1]);
+        dayInMonth.setDate(day);
+        if (now > dayInMonth) {
+            dayInMonth.setMonth(dayInMonth.getMonth() + 1); 
+        }
+        nextSync = dayInMonth;
+    }else if(schedule.type === "yearly"){
+        const date = schedule.dateTime.slice(0,9).split("-");
+        const time = schedule.dateTime.slice(11,15).split(":");
+        const dayInYear = new Date(date[0], date[1], date[2], time[0], time[1]);
+        if (now > dayInYear) {
+            dayInYear.setFullYear(dayInYear.getFullYear() + 1);
+        }
+        nextSync = dayInYear;
+    }
+
+    nextSync.setHours(nextSync.getHours() + 2);
+    const formattedDate = nextSync.toISOString().slice(0,16).replaceAll("-", "/").replace("T", " ");
+
+    return formattedDate;
+  }

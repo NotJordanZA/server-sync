@@ -1,0 +1,14 @@
+{
+  "sessionUrl": "ftp://jkl:jkl@jkl",
+  "remotePath": "jkl",
+  "localPath": "jkl",
+  "logPath": "jlk",
+  "connections": "1",
+  "schedule": {
+    "type": "weekly",
+    "day": "Monday",
+    "time": "11:00"
+  },
+  "fileMask": "",
+  "retentionYears": ""
+}

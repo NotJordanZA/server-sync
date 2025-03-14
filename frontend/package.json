@@ -14,6 +14,7 @@
     "electron": "^35.0.0"
   },
   "dependencies": {
+    "dotenv": "^16.4.7",
     "electron-reload": "^2.0.0-alpha.1"
   }
 }

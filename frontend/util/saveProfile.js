@@ -9,6 +9,13 @@ export async function saveProfile(name, config, callback) {
     if (!fs.existsSync(profilesDirectory)) {
           fs.mkdirSync(profilesDirectory, { recursive: true });
     }
+
+    const internalLogsDirectory = `./logs`;
+    if (!fs.existsSync(internalLogsDirectory)) {
+          fs.mkdirSync(internalLogsDirectory, { recursive: true });
+    }
+
+    
     
     if (!config) {
         callback("Error: config is undefined");
@@ -16,7 +23,15 @@ export async function saveProfile(name, config, callback) {
     }
 
     const nameNoWhitespace = name.replace(/\s+/g, '');
-    
+
+    const logFilePath = `./logs/${nameNoWhitespace}_log.txt`;
+
+    fs.writeFile(logFilePath, `Log file created for profile: ${name} at ${new Date().toISOString()}\n`, (logErr) => {
+        if (logErr) {
+            console.error(`Failed to write log file: ${logErr}`);
+        }
+    });
+
     try {
         const profiles = await loadProfiles();
         

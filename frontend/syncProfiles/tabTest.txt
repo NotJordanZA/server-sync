@@ -5,7 +5,8 @@
   "logPath": "asd",
   "connections": "3",
   "schedule": {
-    "type": "never"
+    "type": "daily",
+    "time": "11:00"
   },
   "fileMask": "",
   "retentionYears": ""

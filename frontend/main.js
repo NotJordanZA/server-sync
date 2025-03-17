@@ -147,8 +147,11 @@ ipcMain.handle("get-profiles", async () => {
 });
 
 // Handle profiles sync
-ipcMain.on("sync-profiles", (event, profiles) =>{
-  syncProfiles(profiles);
+ipcMain.on("sync-profiles", async (event, profiles) => {
+  await syncProfiles(profiles, (output) => {
+    event.reply("sync-progress", output);
+  });
+  event.reply("sync-complete");
 });
 
 // Handle get last-sync

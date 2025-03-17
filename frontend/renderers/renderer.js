@@ -67,18 +67,55 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 document.getElementById("syncBtn").addEventListener("click", () => {
+    const overlay = document.getElementById("syncOverlay");
+    overlay.style.display = "flex";
     const profileList = document.getElementById("profileList");
 
     const profilesToSync = [];
 
     for (const profile of profileList.children) {
-        checked = profile.children[0].children[0].checked;
-        if(checked){
+        if (profile.children[0].children[0].checked) {
             profilesToSync.push(profile.children[0].children[2].children[0].textContent);
+            profile.dataset.syncComplete = "false";
+            profile.children[0].children[1].classList.remove("sync-success", "sync-failure");
+            profile.children[0].children[1].classList.add("syncing");
+        } else {
+            profile.dataset.syncComplete = "true";
+            profile.children[0].children[1].classList.remove("syncing", "sync-success", "sync-failure");
         }
     }
-    // console.log(profilesToSync);
+
     window.electronAPI.syncProfiles(profilesToSync);
+
+    window.electronAPI.onSyncProgress((data) => {
+        const progressArray = data.split('\n');
+        for (const profile of profileList.children) {
+            if (progressArray[0] === profile.children[0].children[2].children[0].textContent) {
+                profile.dataset.syncComplete = "true";
+                profile.children[0].children[0].checked = false;
+                profile.children[0].children[1].classList.remove("syncing");
+                if (progressArray[1] === "Success:") {
+                    profile.children[0].children[1].classList.add("sync-success");
+                } else {
+                    profile.children[0].children[1].classList.add("sync-failure");
+                    window.electronAPI.showMessage("error", "Error Syncing Profile", data);
+                }
+            }
+        }
+    });
+
+    // window.electronAPI.onSyncComplete(() => {
+    //     clearInterval(intervalId);
+    //     for (const profile of profileList.children) {
+    //         profile.children[0].children[1].style.backgroundColor = "#ccc";
+    //         profile.children[0].children[1].style.transition = "0.2s ease-in-out";
+    //     }
+    // });
+
+    window.electronAPI.onSyncComplete(() => {
+        // document.body.classList.remove("no-interaction");
+        overlay.style.display = "none";
+    });
 });
 
 document.getElementById("selectAllBtn").addEventListener("click", () => {

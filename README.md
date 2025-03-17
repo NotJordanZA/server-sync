@@ -25,5 +25,6 @@ Synchronisation tool
 - [x] Add next sync to profiles
 - [x] Add last sync to profiles
 - [x] Add delete confirmation
-- [ ] Add syncing animation (breathing toggle)
-- [ ] Prevent action while syncing
+- [x] Add syncing animation (breathing toggle)
+- [x] Prevent action while syncing
+- [x] Add manual sync results indicator(green/red toggle)

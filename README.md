@@ -12,13 +12,13 @@ Synchronisation tool
 - [x] Group batch files by schedule (all daily 8pm in same .bat etc.)
 - [x] Add filters/masks  
 - [x] Add emailing functionality  
-    -[x] Send summary emails grouped by schedule and supplied email
-        -[x] Create grouped logs
-        -[x] Create email script
+    - [x] Send summary emails grouped by schedule and supplied email
+        - [x] Create grouped logs
+        - [x] Create email script
 - [ ] Add SQL connection  
 - [x] Update UI
-    -[x] Home page
-    -[x] Profile page
+    - [x] Home page
+    - [x] Profile page
 - [x] Add Update profile feature
 - [x] Add group profile selection
 - [x] Implement sync now functionality

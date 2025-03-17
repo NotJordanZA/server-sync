@@ -66,7 +66,8 @@ export function createBatchFilesBySchedule(profiles) {
     }
 
     const psEmailScriptPath = path.join(__dirname, "../scripts", "sendEmails.ps1");
-    const emailCommand = `pwsh.exe -ExecutionPolicy Bypass -File "${psEmailScriptPath}" -scheduleLogPath "${scheduleLogPath}" -MailgunApiKey "${process.env.MAILGUN_API_KEY}" -MailgunDomain "${process.env.MAILGUN_DOMAIN}" -MailgunFromAddress "${process.env.MAILGUN_ADDRESS}"`;
+    const emailSubject = constructEmailSubject(safeKey);
+    const emailCommand = `pwsh.exe -ExecutionPolicy Bypass -File "${psEmailScriptPath}" -scheduleLogPath "${scheduleLogPath}" -MailgunApiKey "${process.env.MAILGUN_API_KEY}" -MailgunDomain "${process.env.MAILGUN_DOMAIN}" -MailgunFromAddress "${process.env.MAILGUN_ADDRESS}" -EmailSubject "${emailSubject}"`;
     contents += `::Email Script\r\n`;
     contents += `${emailCommand}\r\n`;
 
@@ -139,4 +140,21 @@ export function createBatchFilesBySchedule(profiles) {
       console.log(`Batch file cleared: ${batchFilePath}`);
     }
   });
+}
+
+function capitalizeFirstLetter(val) {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
+
+function constructEmailSubject(key) {
+  let subject = key.replaceAll("_", " ");
+  // subject.replaceAll("-", "/");
+  subject = capitalizeFirstLetter(subject);
+  subject = setCharAt(subject, subject.length - 3, ':');
+  return subject + " Sync Results"
+}
+
+function setCharAt(str,index,chr) {
+  if(index > str.length-1) return str;
+  return str.substring(0,index) + chr + str.substring(index+1);
 }

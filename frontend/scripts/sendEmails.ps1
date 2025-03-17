@@ -33,7 +33,7 @@ if (-not $lastResultMatch) {
 }
 
 # Determine the index to start processing (immediately after "The results:")
-$startIndex = $lastResultMatch.LineNumber  # (LineNumber is 1-based)
+$startIndex = $lastResultMatch.LineNumber  
 if ($startIndex -ge $lines.Length) {
     Write-Error "No data found after the last 'The results:' line."
     exit 1
@@ -83,9 +83,36 @@ $headers = @{
 # For each email group, build the email body and send the email using Mailgun
 foreach ($group in $groupedResults) {
     $toEmail = $group.Name
-    $body = "Results:`n"
+    $totalCount = 0
+    $successCount = 0
+    $profileArray = @()
+
     foreach ($entry in $group.Group) {
-        $body += "$($entry.Profile) - $($entry.StatusMessage)`n"
+        if($entry.StatusMessage -eq "Synced Successfully"){
+            $successCount += 1
+        }
+        $statusClass = $entry.StatusMessage -eq "Synced Successfully"? "success":"error"
+        $profileArray += @{
+            profile       = $entry.Profile
+            statusClass   = $statusClass
+            statusMessage = $entry.StatusMessage
+        }
+        $totalCount += 1
+    }
+
+    $mailgunVariables = @{
+        profiles = $profileArray
+    } | ConvertTo-Json -Depth 3 -Compress 
+
+    if($successCount -eq $totalCount){
+        $EmailSubject += " - All Syncs Successfull"
+    }else{
+        $failedSyncs = $totalCount - $successCount
+        if($failedSyncs -eq 1){
+            $EmailSubject += " - $failedSyncs Sync Failed"
+        }else{
+            $EmailSubject += " - $failedSyncs Syncs Failed"
+        }
     }
     
     # Parameters for the Mailgun API request
@@ -93,7 +120,8 @@ foreach ($group in $groupedResults) {
         from    = $MailgunFromAddress
         to      = $toEmail
         subject = $EmailSubject
-        text    = $body
+        template='server sync'
+        "t:variables"= $mailgunVariables
     }
     
     try {

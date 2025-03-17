@@ -10,5 +10,5 @@
   },
   "fileMask": "",
   "retentionYears": "",
-  "email": "jordan@profound.co.za"
+  "email": "jordan.bareiss1@gmail.com"
 }

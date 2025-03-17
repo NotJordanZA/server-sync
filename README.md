@@ -11,10 +11,10 @@ Synchronisation tool
     - [x] Updated
 - [x] Group batch files by schedule (all daily 8pm in same .bat etc.)
 - [x] Add filters/masks  
-- [ ] Add emailing functionality  
-    -[ ] Send summary emails grouped by schedule and supplied email
+- [x] Add emailing functionality  
+    -[x] Send summary emails grouped by schedule and supplied email
         -[x] Create grouped logs
-        -[ ] Create email script
+        -[x] Create email script
 - [ ] Add SQL connection  
 - [x] Update UI
     -[x] Home page

@@ -24,17 +24,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         altProfileInfoContainer.className = "altProfileInfoContainer";
         defaultProfileInfoContainer.className = "defaultProfileInfoContainer";
         checkBox.className = "checkbox";
+        checkSpan.className = "checkmark";
         profileHeading.className = "profileHeading";
         lastSync.className = "profileDetail";
         nextSync.className = "profileDetail";
         deleteButton.className = "deleteButton";
         updateButton.className = "updateButton";
+        profileButtonsContainer.className = "profileButtonsContainer";
 
         checkLabel.htmlFor = `profileCheck_${profile.name}`;
-        // checkLabel.style.cursor = "pointer";
         checkBox.type = "checkbox";
         checkBox.id = `profileCheck_${profile.name}`;
-        checkSpan.className = "checkmark";
+        nextSync.id = "nextSync";
+
         profileHeading.textContent = profile.name;
         lastSync.textContent = "Last Sync: ";
         nextSync.textContent = `Next Sync: `;
@@ -57,11 +59,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 `;
                 altProfileInfoContainer.style.display = "flex";
                 defaultProfileInfoContainer.style.display = "none";
-                profileContainer.style.height = "min-content";
             } else {
                 altProfileInfoContainer.style.display = "none";
                 defaultProfileInfoContainer.style.display = "flex";
-                profileContainer.style.height = "73px";
             }
         });
 
@@ -103,7 +103,6 @@ document.getElementById("syncBtn").addEventListener("click", () => {
     const overlay = document.getElementById("syncOverlay");
     overlay.style.display = "flex";
     const profileList = document.getElementById("profileList");
-
     const profilesToSync = [];
 
     for (const profile of profileList.children) {
@@ -120,7 +119,7 @@ document.getElementById("syncBtn").addEventListener("click", () => {
 
     window.electronAPI.syncProfiles(profilesToSync);
 
-    window.electronAPI.onSyncProgress((data) => {
+    window.electronAPI.onSyncProgress(async(data) => {
         const progressArray = data.split('\n');
         for (const profile of profileList.children) {
             if (progressArray[0] === profile.children[0].children[2].children[0].textContent) {
@@ -129,6 +128,7 @@ document.getElementById("syncBtn").addEventListener("click", () => {
                 profile.children[0].children[1].classList.remove("syncing");
                 if (progressArray[1] === "Success:") {
                     profile.children[0].children[1].classList.add("sync-success");
+                    profile.children[0].children[2].children[1].children[0].children[0].textContent = await window.electronAPI.getLastSync(profile.children[0].children[2].children[0].textContent);
                 } else {
                     profile.children[0].children[1].classList.add("sync-failure");
                     window.electronAPI.showMessage("error", "Error Syncing Profile", data);
@@ -137,13 +137,6 @@ document.getElementById("syncBtn").addEventListener("click", () => {
         }
     });
 
-    // window.electronAPI.onSyncComplete(() => {
-    //     clearInterval(intervalId);
-    //     for (const profile of profileList.children) {
-    //         profile.children[0].children[1].style.backgroundColor = "#ccc";
-    //         profile.children[0].children[1].style.transition = "0.2s ease-in-out";
-    //     }
-    // });
 
     window.electronAPI.onSyncComplete(() => {
         // document.body.classList.remove("no-interaction");

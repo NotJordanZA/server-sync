@@ -40,8 +40,9 @@ body{
     background-color: rgb(221, 226, 224);
     padding: 5px;
     box-shadow: 0px 1px rgba(0,0,0,0.1); 
-    height: 73px;
+    height: min-content;
     transition: 0.2s;
+    position: relative;
     /* position: relative; */
 }
 
@@ -50,6 +51,8 @@ body{
     margin: 0;
     margin-bottom: 2px;
     cursor: pointer;
+    display: inline-block;
+    word-break: break-word;
 }
 
 .profileDetail{
@@ -96,6 +99,11 @@ button:hover {
 
 .profileContainer button{
     margin-right: 4px;
+}
+
+.profileButtonsContainer{
+    position: absolute;
+    bottom: -5px;
 }
 
 /* Hide the browser's default checkbox */
@@ -166,4 +174,8 @@ button:hover {
     font-size: 2em;
     /* Allow pointer events to fall through for scroll interactions: */
     /* pointer-events: none; */
+  }
+
+  #nextSync{
+    margin-bottom: 14px;
   }

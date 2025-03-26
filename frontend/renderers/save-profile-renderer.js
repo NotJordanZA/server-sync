@@ -26,13 +26,6 @@ window.electronAPI.onUpdateProfilePageLoad( async (config) => {
 
     profile.value = config.name;
 
-    // const regex = /ftp:\/\/(?:([^:@]+):([^:@]+)@)?([^\/]+)(\/.*)?/;
-    // const match = config.profileJSON.sessionUrl.match(regex);
-
-    // host.value = match[3];
-    // username.value = match[1];
-    // password.value = match[2];
-    console.log("Pre connection profile: ", config.profileJSON.connectionProfile);
     connectionProfile.value = config.profileJSON.connectionProfile;
     if (connectionProfile.value !== "Create New Connection"){
         const hostLabel = document.getElementById("host-label");
@@ -90,7 +83,7 @@ window.electronAPI.onUpdateProfilePageLoad( async (config) => {
     config.profileJSON.retentionYears? retentionYears.value = config.profileJSON.retentionYears : "";
 })
 
-function handleProfileSave(isUpdate = false, originalName = null) {
+async function handleProfileSave(isUpdate = false, originalName = null) {
     const profile = document.getElementById("profile").value;
     const connectionProfile = document.getElementById("connectionProfile");
     const connectionProfileValue = connectionProfile.options[connectionProfile.selectedIndex].text;
@@ -106,78 +99,111 @@ function handleProfileSave(isUpdate = false, originalName = null) {
     const retentionYears = document.getElementById("retentionYears").value;
     const email = document.getElementById("email").value;
 
-    let scheduleDetails = {};
-    if (scheduleType === "daily") {
-        scheduleDetails = { type: "daily", time: document.getElementById("scheduleTime").value };
-    } else if (scheduleType === "weekly") {
-        scheduleDetails = { type: "weekly", day: document.getElementById("weeklyDay").value, time: document.getElementById("scheduleTime").value };
-    } else if (scheduleType === "monthly") {
-        scheduleDetails = { type: "monthly", day: document.getElementById("monthlyDay").value, time: document.getElementById("scheduleTime").value };
-    } else if (scheduleType === "yearly") {
-        scheduleDetails = { type: "yearly", dateTime: document.getElementById("yearlyDate").value };
-    } else if (scheduleType == "never") {
-        scheduleDetails = { type: "never" };
-    }
-
-    var config = {};
+    const requiredFields = [
+        { value: profile, name: "Profile Name" },
+        { value: localDir, name: "Local Directory" },
+        { value: remoteDir, name: "Remote Directory" }
+    ];
     
-    if (connectionProfileValue === "Create New Connection"){
-        const connectionConfig = {
-            host: host,
-            username: username,
-            password: password
+    let isMissingRequired = false;
+    let requiredFieldMessage = "You are missing the following required field(s):\n";
+    
+    requiredFields.forEach(field => {
+        if (!field.value) {
+            isMissingRequired = true;
+            requiredFieldMessage += `\t${field.name}\n`;
         }
-
-        window.electronAPI.saveConnectionProfile(connectionConfig);
-
-        config = {
-            connectionProfile: `${username}@${host}`,
-            remotePath: remoteDir,
-            localPath: localDir,
-            logPath: logDir,
-            connections: noConnections,
-            schedule: scheduleDetails,
-            fileMask: fileMask,
-            retentionYears: retentionYears,
-            email: email,
-        };
-    }else{
-        config = {
-            connectionProfile: `${connectionProfileValue}`,
-            remotePath: remoteDir,
-            localPath: localDir,
-            logPath: logDir,
-            connections: noConnections,
-            schedule: scheduleDetails,
-            fileMask: fileMask,
-            retentionYears: retentionYears,
-            email: email,
-        };
-    }
-
-    if (isUpdate) {
-        window.electronAPI.updateProfile(profile, originalName, config);
-        window.electronAPI.onUpdateProfileOutput(async (message) => {
-            console.log(message);
-            if (message.startsWith("Error")) {
-                await window.electronAPI.showMessage("error", "Error", message);
-            } else {
-                window.electronAPI.closeProfile();
-            }
-        });
-    } else {
-        window.electronAPI.saveProfile(profile, config);
-        window.electronAPI.onSaveProfileOutput(async (message) => {
-            console.log(message);
-            if (message.startsWith("Error")) {
-                await window.electronAPI.showMessage("error", "Error", message);
-            } else {
-                window.electronAPI.closeProfile();
-            }
-        });
-    }
-
+    });
     
+    if (connectionProfileValue === "Create New Connection") {
+        if (!host) {
+            isMissingRequired = true;
+            requiredFieldMessage += `\tHost\n`;
+        }
+        if (!username) {
+            isMissingRequired = true;
+            requiredFieldMessage += `\tUsername\n`;
+        }
+        if (!password) {
+            isMissingRequired = true;
+            requiredFieldMessage += `\tPassword\n`;
+        }
+    }
+
+    if(!isMissingRequired){
+        let scheduleDetails = {};
+        if (scheduleType === "daily") {
+            scheduleDetails = { type: "daily", time: document.getElementById("scheduleTime").value };
+        } else if (scheduleType === "weekly") {
+            scheduleDetails = { type: "weekly", day: document.getElementById("weeklyDay").value, time: document.getElementById("scheduleTime").value };
+        } else if (scheduleType === "monthly") {
+            scheduleDetails = { type: "monthly", day: document.getElementById("monthlyDay").value, time: document.getElementById("scheduleTime").value };
+        } else if (scheduleType === "yearly") {
+            scheduleDetails = { type: "yearly", dateTime: document.getElementById("yearlyDate").value };
+        } else if (scheduleType == "never") {
+            scheduleDetails = { type: "never" };
+        }
+    
+        var config = {};
+        
+        if (connectionProfileValue === "Create New Connection"){
+            const connectionConfig = {
+                host: host,
+                username: username,
+                password: password
+            }
+    
+            window.electronAPI.saveConnectionProfile(connectionConfig);
+    
+            config = {
+                connectionProfile: `${username}@${host}`,
+                remotePath: remoteDir,
+                localPath: localDir,
+                logPath: logDir,
+                connections: noConnections,
+                schedule: scheduleDetails,
+                fileMask: fileMask,
+                retentionYears: retentionYears,
+                email: email,
+            };
+        }else{
+            config = {
+                connectionProfile: `${connectionProfileValue}`,
+                remotePath: remoteDir,
+                localPath: localDir,
+                logPath: logDir,
+                connections: noConnections,
+                schedule: scheduleDetails,
+                fileMask: fileMask,
+                retentionYears: retentionYears,
+                email: email,
+            };
+        }
+    
+        if (isUpdate) {
+            window.electronAPI.updateProfile(profile, originalName, config);
+            window.electronAPI.onUpdateProfileOutput(async (message) => {
+                console.log(message);
+                if (message.startsWith("Error")) {
+                    await window.electronAPI.showMessage("error", "Error", message);
+                } else {
+                    window.electronAPI.closeProfile();
+                }
+            });
+        } else {
+            window.electronAPI.saveProfile(profile, config);
+            window.electronAPI.onSaveProfileOutput(async (message) => {
+                console.log(message);
+                if (message.startsWith("Error")) {
+                    await window.electronAPI.showMessage("error", "Error", message);
+                } else {
+                    window.electronAPI.closeProfile();
+                }
+            });
+        }
+    }else{
+        await window.electronAPI.showMessage("error", "Error", requiredFieldMessage);
+    }
 }
 
 document.getElementById("saveProfileBtn").onclick = () => handleProfileSave();

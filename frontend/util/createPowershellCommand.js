@@ -68,7 +68,7 @@ export async function constructRunSyncCommand(profileName, syncNow = false){
     const fileRetention = profile.retentionYears? `>${profile.retentionYears}Y`:"";
     const exlcudedFiles = profile.fileMask? profile.fileMask:"";
     const fileMask = `--fileMask "${fileRetention}|${exlcudedFiles}"`;
-    var scheduleLogPathArg = `--scheduleLogPath " "`;
+    var scheduleLogPathArg = `--scheduleLogPath "${path.join(__dirname, "../manualSyncLogs", `${profileName}_log.txt`)}"`;
 
     if(profile.schedule.type !== "never" && !syncNow){
         let key = "";

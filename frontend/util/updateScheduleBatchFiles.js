@@ -10,8 +10,7 @@ const __dirname = path.dirname(__filename);
 
 /**
  * Groups profiles by schedule and creates/updates a batch file for each group.
- * Also registers a Windows scheduled task for each unique schedule.
- * If a batch file exists for a schedule that no longer has any profiles, that file is cleared.
+ * If a batch file exists for a schedule that no longer has any profiles, that file is deleted.
  *
  * @param {Array} profiles - Array of profile objects.
  */
@@ -50,7 +49,7 @@ export function createBatchFilesBySchedule(profiles) {
     scheduleGroups[safeKey].push(profile);
   });
 
-  // For each schedule group that exists, build/update the batch file and register a scheduled task.
+  // For each schedule group that exists, build/update the batch file
   Object.keys(scheduleGroups).forEach(async safeKey => {
     const profilesInGroup = scheduleGroups[safeKey];
     const batchFilePath = path.join(scheduleDir, `${safeKey}.bat`);
@@ -87,7 +86,7 @@ export function createBatchFilesBySchedule(profiles) {
     });
 
     // Determine the scheduling parameters based on the safeKey.
-    const parts = safeKey.split('_'); // e.g., ["daily", "20-00"] or ["weekly", "Monday", "20-00"]
+    const parts = safeKey.split('_'); 
     let schType = "";
     let startTime = "";
     let additionalParams = "";
@@ -95,7 +94,7 @@ export function createBatchFilesBySchedule(profiles) {
 
     if (parts[0] === "daily") {
       schType = "DAILY";
-      startTime = parts[1].replace('-', ':'); // Convert back to colon for schtasks
+      startTime = parts[1].replace('-', ':'); 
     } else if (parts[0] === "weekly") {
       schType = "WEEKLY";
       const day = parts[1].substring(0, 3).toUpperCase();
@@ -114,37 +113,21 @@ export function createBatchFilesBySchedule(profiles) {
         startTime = `${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}`;
       }
     }
-
-    // Build the schtasks command.
-    let schtasksCmd = `schtasks /create /f /sc ${schType} /tn "${taskName}" /tr "${batchFilePath}"`;
-    if (startTime) {
-      schtasksCmd += ` /st ${startTime}`;
-    }
-    if (additionalParams) {
-      schtasksCmd += ` ${additionalParams}`;
-    }
-
-  // console.log(`Scheduled task "${taskName}" updated:`);
-    // Execute the schtasks command to create/update the scheduled task.
-    // exec(schtasksCmd, (error, stdout, stderr) => {
-    //   if (error) {
-    //     console.error(`Error scheduling task for ${safeKey}:`, error);
-    //   } else {
-    //     console.log(`Scheduled task "${taskName}" updated:`, stdout);
-    //   }
-    // });
   });
 
-  // Clear out batch files in the schedules folder that are no longer needed
+  // Delete batch files in the schedules folder that are no longer needed
   const existingBatchFiles = fs.readdirSync(scheduleDir).filter(file => file.endsWith('.bat'));
   const currentKeys = new Set(Object.keys(scheduleGroups));
   existingBatchFiles.forEach(file => {
     const key = file.replace('.bat', '');
     if (!currentKeys.has(key)) {
-      // Overwrite the file with just the header.
       const batchFilePath = path.join(scheduleDir, file);
-      fs.writeFileSync(batchFilePath, '@echo off\r\n');
-      console.log(`Batch file cleared: ${batchFilePath}`);
+      fs.unlink(`${batchFilePath}`, async function (err) {
+          if (err){
+            console.error(`Error: ${err}`);
+          }
+      });
+      console.log(`Batch file deleted: ${batchFilePath}`);
     }
   });
 }

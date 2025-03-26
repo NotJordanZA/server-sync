@@ -31,9 +31,10 @@ Synchronisation tool
 - [x] More verbose emails (number of files etc.)
 - [x] Encrypt/secure passwords etc.
 - [x] Create servers which can be selected on profile creation (previously used connections)
-- [x] Windows service for scheduling
-- [x] Install IIS for ftp server
+- [x] Create Windows service for scheduling
 - [x] Display additional profile information
+- [x] Prevent profile save/update without required fields
+- [x] Polish manual sync
 
 ## FAR FUTURE TODO
 - [ ] Multiple directory syncing

@@ -1,16 +1,20 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
-const { exec } = require("child_process");
-const path = require("path");
-const { runPowerShell } = require("./util/powershellRunner");
-const {saveProfile} = require("./util/saveProfile");
-const {loadProfileWithPath, loadProfiles} = require("./util/loadProfile");
-const {deleteProfile} = require("./util/deleteProfile");
-const {createBatchFilesBySchedule} = require("./util/updateScheduleBatchFiles");
-const { updateProfile } = require("./util/updateProfile");
-const { syncProfiles } = require("./util/syncProfiles");
-const { extractLastSync } = require("./util/extractLastSync");
-const { loadConnectionProfiles } = require("./util/loadConnectionProfiles");
-const { saveConnectionProfile } = require("./util/saveConnectionProfile");
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import { exec } from "child_process";
+import path from "path";
+import { runPowerShell } from "./util/powershellRunner.js";
+import { saveProfile } from "./util/saveProfile.js";
+import { loadProfileWithPath, loadProfiles } from "./util/loadProfile.js";
+import { deleteProfile } from "./util/deleteProfile.js";
+import { createBatchFilesBySchedule } from "./util/updateScheduleBatchFiles.js";
+import { updateProfile } from "./util/updateProfile.js";
+import { syncProfiles } from "./util/syncProfiles.js";
+import { extractLastSync } from "./util/extractLastSync.js";
+import { loadConnectionProfiles } from "./util/loadConnectionProfiles.js";
+import { saveConnectionProfile } from "./util/saveConnectionProfile.js";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 let mainWindow;
 let profileWindow;
@@ -31,7 +35,7 @@ app.whenReady().then(() => {
     if (!profileWindow) {
       profileWindow = new BrowserWindow({
         width: 451,
-        height: 500,
+        height: 440,
         parent: mainWindow, // Makes it a child window
         modal: true, // Blocks interaction with mainWindow when open
         autoHideMenuBar: true,
@@ -171,7 +175,6 @@ ipcMain.handle("get-connection-profiles", async () => {
 
 // Handle saving new connection profile
 ipcMain.on("save-connection-profile", (event, profile) => {
-  console.log("Saving connection profile", profile);
   saveConnectionProfile(profile);
 });
 

@@ -16,6 +16,20 @@ export async function updateProfile(name, originalName, config, callback) {
 
         if(name !== originalName){
             deleteProfile(originalName, ()=>{});
+            fs.rename(`./logs/${originalName}_log.txt`, `./logs/${nameNoWhitespace}_log.txt`, function (err) {
+                if (err) {
+                    callback(`Error renaming log file: ${err}`);
+                } else {
+                    callback("Renamed Log file Successfully");
+                }
+            });
+            fs.rename(`./manualSyncLogs/${originalName}_log.txt`, `./logs/${nameNoWhitespace}_log.txt`, function (err) {
+                if (err) {
+                    callback(`Error renaming log file: ${err}`);
+                } else {
+                    callback("Renamed Log file Successfully");
+                }
+            });
         }
 
         fs.writeFile(`./syncProfiles/${nameNoWhitespace}.txt`, jsonString, async function (err) {

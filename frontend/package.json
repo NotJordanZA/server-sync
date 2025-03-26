@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A tool for syncing two directories using s/ftp",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"

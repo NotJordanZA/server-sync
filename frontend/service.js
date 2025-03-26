@@ -111,16 +111,19 @@ function loadBatchFilesAndSchedule() {
           log.info(`[${new Date().toISOString()}] Executing batch file: ${filePath}`);
           exec(`"${filePath}"`, (error, stdout, stderr) => {
             if (error) {
-              console.error(`Error executing ${filePath}:`, error);
-              log.error(`Error executing ${filePath}:`, error);
+              const errMsg = `Error executing ${filePath}: ${error.message}`;
+              console.error(errMsg);
+              log.error(errMsg);
             }
             if (stdout) {
-              console.log(`Output from ${filePath}:`, stdout);
-              log.info(`Output from ${filePath}:`, stdout);
+              const outMsg = `Output from ${filePath}: ${stdout}`;
+              console.log(outMsg);
+              log.info(outMsg);
             }
             if (stderr) {
-              console.error(`Error output from ${filePath}:`, stderr);
-              log.error(`Error output from ${filePath}:`, stderr);
+              const errOutMsg = `Error output from ${filePath}: ${stderr}`;
+              console.error(errOutMsg);
+              log.error(errOutMsg);
             }
           });
         });

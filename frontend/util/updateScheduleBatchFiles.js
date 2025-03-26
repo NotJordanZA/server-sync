@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from "url";
-import { constructPowershellCommand } from './createPowershellCommand.js';
-import 'dotenv/config'
+import { constructPowershellCommand, constructRunSyncCommand } from './createPowershellCommand.js';
+import 'dotenv/config';
+import { exec } from "child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,7 +61,8 @@ export function createBatchFilesBySchedule(profiles) {
     contents += `::logDate\r\n${dateLogCommand}\r\n`;
 
     for (const profile of profilesInGroup) {
-      const command = await constructPowershellCommand(profile.name);
+      // const command = await constructPowershellCommand(profile.name);
+      const command = await constructRunSyncCommand(profile.name);
       contents += `::${profile.name}\r\n`;
       contents += `${command}\r\n`;
     }
@@ -70,6 +72,11 @@ export function createBatchFilesBySchedule(profiles) {
     const emailCommand = `pwsh.exe -ExecutionPolicy Bypass -File "${psEmailScriptPath}" -scheduleLogPath "${scheduleLogPath}" -MailgunApiKey "${process.env.MAILGUN_API_KEY}" -MailgunDomain "${process.env.MAILGUN_DOMAIN}" -MailgunFromAddress "${process.env.MAILGUN_ADDRESS}" -EmailSubject "${emailSubject}"`;
     contents += `::Email Script\r\n`;
     contents += `${emailCommand}\r\n`;
+
+    const psDBScriptPath = path.join(__dirname, "../scripts", "writeResultsToDB.ps1");
+    const DBCommand = `pwsh.exe -ExecutionPolicy Bypass -File "${psDBScriptPath}" -scheduleLogPath "${scheduleLogPath}" -dbURL "${process.env.SQL_API_ADDRESS}"`;
+    contents += `::Write To DB Script\r\n`;
+    contents += `${DBCommand}\r\n`;
 
     fs.writeFile(batchFilePath, contents, function (err) {
       if (err) {
@@ -117,7 +124,7 @@ export function createBatchFilesBySchedule(profiles) {
       schtasksCmd += ` ${additionalParams}`;
     }
 
-  console.log(`Scheduled task "${taskName}" updated:`);
+  // console.log(`Scheduled task "${taskName}" updated:`);
     // Execute the schtasks command to create/update the scheduled task.
     // exec(schtasksCmd, (error, stdout, stderr) => {
     //   if (error) {

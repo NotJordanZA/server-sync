@@ -8,6 +8,7 @@ html{
 body{
     height: 100%;
     /* margin: 15px; */
+    margin-top: 0px;
     overflow: hidden;
 }
 
@@ -15,6 +16,7 @@ body{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    padding-top: 10px;
 }
 
 #profileList{
@@ -39,6 +41,7 @@ body{
     padding: 5px;
     box-shadow: 0px 1px rgba(0,0,0,0.1); 
     height: 73px;
+    transition: 0.2s;
     /* position: relative; */
 }
 
@@ -46,19 +49,29 @@ body{
     /* margin: 5px 0 5px 0; */
     margin: 0;
     margin-bottom: 2px;
+    cursor: pointer;
 }
 
-.syncDetail{
+.profileDetail{
     /* margin: 5px 0 5px 0; */
     margin: 0;
     color: #4e4e4e;
-    word-wrap: break-word;
+    display: inline-block;
+    word-break: break-word;
     overflow: hidden;
     font-size: 0.9rem;
 }
 
-.syncDetail span{
+.profileDetail span{
     font-weight: bold;
+    display: inline-block;
+    word-break: break-word;
+}
+
+.defaultProfileInfoContainer, .altProfileInfoContainer{
+    display: flex;
+    flex-direction: column;
+    transition: 0.2s;
 }
 
 /* .checkbox{
@@ -100,7 +113,7 @@ button:hover {
     align-items: center;
     justify-content: center;
     height: auto;
-    width: 25px;
+    min-width: 25px;
     background-color: #ccc;
     margin: -5px;
     border-top-left-radius: 10px;

@@ -20,47 +20,54 @@ function Write-Log {
     }
 }
 
+function Write-Stats {
+    param (
+        [int]$synced,
+        [int]$skipped,
+        [int]$deleted,
+        [int]$total
+    )
+    Write-Log $synced
+    Write-Log $skipped
+    Write-Log $deleted
+    Write-Log $total
+}
+
+function Get-SkippedFiles {
+    param (
+        [System.Object]$session,
+        [string]$path
+    )
+    return $session.EnumerateRemoteFiles($path, "*.*", [WinSCP.EnumerationOptions]::AllDirectories).count
+}
+
 Start-Transcript -Path $internalLogPath -Append
 
-try
-{
+try {
     Write-Log "$profileName"
     Write-Log "$email"
-    # $assemblyFilePath = "C:\Program Files (x86)\WinSCP\netstandard2.0\WinSCPnet.dll"
     $assemblyFilePath = Join-Path $PSScriptRoot "..\winscp\WinSCPnet.dll"
-    # Load WinSCP .NET assembly
     Add-Type -Path $assemblyFilePath
  
-    # Setup session options
     $sessionOptions = New-Object WinSCP.SessionOptions
     $sessionOptions.ParseUrl($sessionUrl)
  
     $started = Get-Date
-    #$dateForLog = Get-Date -Format "MM-dd-yyyy-HH:mm"
-    #$logOutput = $logPath + $dateForLog + ".log"
-    #New-Item $logOutput -type file
-    # Plain variables cannot be modified in job threads
-    $stats = @{
-        count = 0
-    }
- 
-    try
-    {
-        # Connect
+
+    try {
         Write-Host "Connecting..."
         $session = New-Object WinSCP.Session
         $session.SessionLogPath = $logPath
         $sessionOptions.AddRawSettings("PreserveTimeDirs", "1")
+        $sessionOptions.Timeout = New-TimeSpan -Seconds 30
         $session.Open($sessionOptions)
 
         $transferOptions = New-Object WinSCP.TransferOptions -Property @{
-            # FileMask = ">5Y|*.tmp"
             FileMask = $fileMask
             PreserveTimestamp = $true
         }
         
         Write-Host "Comparing directories..."
-
         $differences = $session.CompareDirectories(
             [WinSCP.SynchronizationMode]::Remote, 
             $localPath, 
@@ -68,67 +75,102 @@ try
             $true,  
             $transferOptions  
         )
-        if ($differences.Count -eq 0)
-        {
+
+        Write-Host "Differences : $($differences)"
+
+        if ($differences.Count -eq 0) {
             Write-Host "No changes found."
+            $finalTotal = 0
+            $files =  $session.EnumerateRemoteFiles($remotePath, "*.*", [WinSCP.EnumerationOptions]::AllDirectories)
+            foreach ($file in $files){
+                $finalTotal++
+            }
+            Write-Stats -synced 0 -skipped $finalTotal -deleted 0 -total $finalTotal
             Write-Host "Done"
             Write-Host "Finished: $(Get-Date)"
             Write-Log "Done"   
         }
-        else
-        {
-            if ($differences.Count -lt $connections)
-            {
-                $connections = $differences.Count;
+        else {
+            if ($differences.Count -lt $connections) {
+                $connections = $differences.Count
             }
             $differenceEnumerator = $differences.GetEnumerator()
      
-            for ($i = 1; $i -le $connections; $i++)
-            {
+            # Start thread jobs. Each job will maintain its own counters.
+            for ($i = 1; $i -le $connections; $i++) {
                 Start-ThreadJob -Name "Connection $i" -ArgumentList $i {
                     param ($no)
      
-                    try
-                    {
+                    # Initialize local counters
+                    $localSynced  = 0
+                    $localSkipped = 0
+                    $localDeleted = 0
+                    $localTotal   = 0
+
+                    try {
                         Write-Host "Starting connection $no..."
-     
                         $syncSession = New-Object WinSCP.Session
                         $syncSession.Open($using:sessionOptions)
      
-                        while ($True)
-                        {
+                        while ($true) {
+                            # Lock access to the enumerator
                             [System.Threading.Monitor]::Enter($using:differenceEnumerator)
-                            try
-                            {
-                                if (!($using:differenceEnumerator).MoveNext())
-                                {
+                            try {
+                                if (-not ($using:differenceEnumerator).MoveNext()) {
                                     break
                                 }
-     
                                 $difference = ($using:differenceEnumerator).Current
-                                ($using:stats).count++
+                                $localTotal++
                             }
-                            finally
-                            {
+                            finally {
                                 [System.Threading.Monitor]::Exit($using:differenceEnumerator)
                             }
- 
-                            Write-Host "$difference in $no..."
-                            $difference.Resolve($syncSession) | Out-Null
-                        }
      
+                            Write-Host "$difference in connection $no..."
+                            $difference.Resolve($syncSession) | Out-Null
+                            Write-Host "difference operation: $($difference.Action)" 
+                            switch ($difference.Action) {
+                                "UploadNew" { $localSynced++ }
+                                "UploadUpdate" { $localSynced++ }
+                                "DeleteLocal" { $localDeleted++ }
+                                "DeleteRemote" { $localDeleted++ }
+                                "SkipLocal"   { $localSkipped++ }
+                                default  { $localSynced++ }
+                            }
+                        }
                         Write-Host "Connection $no done"
                     }
-                    finally
-                    {
+                    finally {
                         $syncSession.Dispose()
+                    }
+     
+                    # Output the local counters as a custom object.
+                    [PSCustomObject]@{
+                        Synced  = $localSynced
+                        Skipped = $localSkipped
+                        Deleted = $localDeleted
+                        Total   = $localTotal
                     }
                 } | Out-Null
             }
      
             Write-Host "Waiting for connections to complete..."
-            Get-Job | Receive-Job -Wait -ErrorAction Stop
+            $jobResults = Get-Job | Receive-Job -Wait -ErrorAction Stop
      
+            # Aggregate results from all jobs.
+            $finalTotal = 0
+            $files =  $session.EnumerateRemoteFiles($remotePath, "*.*", [WinSCP.EnumerationOptions]::AllDirectories)
+            foreach ($file in $files){
+                $finalTotal++
+            }
+            Write-Host "Final Count $finalTotal"
+            $finalSynced  = ($jobResults | Measure-Object -Property Synced  -Sum).Sum
+            $finalDeleted = ($jobResults | Measure-Object -Property Deleted -Sum).Sum
+            $finalSkipped = $finalTotal - ($finalSynced + $finalDeleted)
+            
+     
+            # Log the aggregated stats BEFORE writing the final status.
+            Write-Stats -synced $finalSynced -skipped $finalSkipped -deleted $finalDeleted -total $finalTotal
             Write-Host "Done"
             Write-Host "Finished: $(Get-Date)"
             Write-Log "Done"
@@ -136,11 +178,9 @@ try
  
         $ended = Get-Date
         Write-Host "Took $(New-TimeSpan -Start $started -End $ended)"
-        Write-Host "Synchronized $($stats.count) differences"
+        Write-Host "Synchronized $($differences.Count) differences"
     }
-    finally
-    {
-        # Disconnect, clean up
+    finally {
         $session.Dispose()
     }
  
@@ -150,6 +190,7 @@ catch
 {
     Write-Host "Error: $($_.Exception.Message)"
     Write-Host "Finished: $(Get-Date)"
+    Write-Stats -synced 0 -skipped 0 -deleted 0 -total 0
     Write-Log "Error"
     exit 1
 }

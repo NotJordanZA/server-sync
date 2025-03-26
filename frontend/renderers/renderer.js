@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     for(const profile of profiles){
         const profileContainer = document.createElement('div');
         const profileInfoContainer = document.createElement('div');
+        const altProfileInfoContainer = document.createElement('div');
+        const defaultProfileInfoContainer = document.createElement('div');
+        const profileButtonsContainer = document.createElement('div');
 
         const checkLabel = document.createElement('label');
         const checkBox = document.createElement('input');
@@ -18,10 +21,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         profileContainer.className = "profileContainer";
         profileInfoContainer.className = "profileInfoContainer";
+        altProfileInfoContainer.className = "altProfileInfoContainer";
+        defaultProfileInfoContainer.className = "defaultProfileInfoContainer";
         checkBox.className = "checkbox";
         profileHeading.className = "profileHeading";
-        lastSync.className = "syncDetail";
-        nextSync.className = "syncDetail";
+        lastSync.className = "profileDetail";
+        nextSync.className = "profileDetail";
         deleteButton.className = "deleteButton";
         updateButton.className = "updateButton";
 
@@ -38,6 +43,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         deleteButton.textContent = "Delete";
         updateButton.textContent = "Edit";
 
+        altProfileInfoContainer.style.display = "none";
+
+        profileHeading.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (altProfileInfoContainer.style.display === "none") {
+                altProfileInfoContainer.innerHTML = `
+                <p class="profileDetail">Connection Profile: <span>${profile.profileJSON.connectionProfile}</span></p>
+                <p class="profileDetail">Remote Path: <span>${profile.profileJSON.remotePath}</span></p>
+                <p class="profileDetail">Local Path: <span>${profile.profileJSON.localPath}</span></p>
+                <p class="profileDetail">Log Path: <span>${profile.profileJSON.logPath}</span></p>
+                <p class="profileDetail">Email: <span>${profile.profileJSON.email}</span></p>
+                `;
+                altProfileInfoContainer.style.display = "flex";
+                defaultProfileInfoContainer.style.display = "none";
+                profileContainer.style.height = "min-content";
+            } else {
+                altProfileInfoContainer.style.display = "none";
+                defaultProfileInfoContainer.style.display = "flex";
+                profileContainer.style.height = "73px";
+            }
+        });
+
         deleteButton.addEventListener("click", async() => {
             const response = await window.electronAPI.showDeleteMessage(`Are you sure you want to delete ${profile.name}?`);
             if(response.response === 0){
@@ -52,10 +79,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         nextSync.appendChild(nextSyncSpan);
 
         profileInfoContainer.appendChild(profileHeading);
-        profileInfoContainer.appendChild(lastSync);
-        profileInfoContainer.appendChild(nextSync);
-        profileInfoContainer.appendChild(updateButton);
-        profileInfoContainer.appendChild(deleteButton);
+        profileInfoContainer.appendChild(defaultProfileInfoContainer);
+        profileInfoContainer.appendChild(altProfileInfoContainer);
+
+        profileButtonsContainer.appendChild(updateButton);
+        profileButtonsContainer.appendChild(deleteButton);
+
+        defaultProfileInfoContainer.appendChild(lastSync);
+        defaultProfileInfoContainer.appendChild(nextSync);
+        defaultProfileInfoContainer.appendChild(profileButtonsContainer);
+        
 
         profileContainer.appendChild(checkBox);
         profileContainer.appendChild(checkSpan);
@@ -114,6 +147,7 @@ document.getElementById("syncBtn").addEventListener("click", () => {
 
     window.electronAPI.onSyncComplete(() => {
         // document.body.classList.remove("no-interaction");
+        console.log("Sync Complete");
         overlay.style.display = "none";
     });
 });

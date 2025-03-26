@@ -20,5 +20,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   onSyncProgress: (callback) => ipcRenderer.on("sync-progress", (event, data) => callback(data)),
   onSyncComplete: (callback) => ipcRenderer.on("sync-complete", callback),
   showDeleteMessage: (message) => ipcRenderer.invoke("show-delete-message", { message }),
+  getConnectionProfiles: () => ipcRenderer.invoke("get-connection-profiles"),
   onDeleteMessageResponse: (callback) => ipcRenderer.on("delete-message-response", (event, data) => callback(data)),
+  saveConnectionProfile: (profile) => ipcRenderer.send("save-connection-profile", profile),
 });

@@ -9,6 +9,8 @@ const {createBatchFilesBySchedule} = require("./util/updateScheduleBatchFiles");
 const { updateProfile } = require("./util/updateProfile");
 const { syncProfiles } = require("./util/syncProfiles");
 const { extractLastSync } = require("./util/extractLastSync");
+const { loadConnectionProfiles } = require("./util/loadConnectionProfiles");
+const { saveConnectionProfile } = require("./util/saveConnectionProfile");
 
 let mainWindow;
 let profileWindow;
@@ -16,7 +18,8 @@ let profileWindow;
 app.whenReady().then(() => {
   mainWindow = new BrowserWindow({
     width: 260,
-    height: 500,
+    height: 480,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
@@ -28,9 +31,10 @@ app.whenReady().then(() => {
     if (!profileWindow) {
       profileWindow = new BrowserWindow({
         width: 451,
-        height: 400,
+        height: 500,
         parent: mainWindow, // Makes it a child window
         modal: true, // Blocks interaction with mainWindow when open
+        autoHideMenuBar: true,
         webPreferences: {
           preload: path.join(__dirname, "preload.js"),
           contextIsolation: true,
@@ -61,7 +65,7 @@ ipcMain.on("open-update-profile", async(event, profileName) => {
   if (!profileWindow) {
     profileWindow = new BrowserWindow({
       width: 451,
-      height: 400,
+      height: 500,
       parent: mainWindow, // Makes it a child window
       modal: true, // Blocks interaction with mainWindow when open
       webPreferences: {
@@ -157,6 +161,18 @@ ipcMain.on("sync-profiles", async (event, profiles) => {
 // Handle get last-sync
 ipcMain.handle("get-last-sync", (event, profile) =>{
   return extractLastSync(profile);
+});
+
+// Handle loading connection profiles
+ipcMain.handle("get-connection-profiles", async () => {
+  const profiles = loadConnectionProfiles();
+  return profiles;
+})
+
+// Handle saving new connection profile
+ipcMain.on("save-connection-profile", (event, profile) => {
+  console.log("Saving connection profile", profile);
+  saveConnectionProfile(profile);
 });
 
 app.on("window-all-closed", () => {

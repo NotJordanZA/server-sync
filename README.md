@@ -15,7 +15,7 @@ Synchronisation tool
     - [x] Send summary emails grouped by schedule and supplied email
         - [x] Create grouped logs
         - [x] Create email script
-- [ ] Add SQL connection  
+- [x] Add SQL connection  
 - [x] Update UI
     - [x] Home page
     - [x] Profile page
@@ -28,3 +28,12 @@ Synchronisation tool
 - [x] Add syncing animation (breathing toggle)
 - [x] Prevent action while syncing
 - [x] Add manual sync results indicator(green/red toggle)
+- [x] More verbose emails (number of files etc.)
+- [x] Encrypt/secure passwords etc.
+- [x] Create servers which can be selected on profile creation (previously used connections)
+- [x] Windows service for scheduling
+- [x] Install IIS for ftp server
+- [x] Display additional profile information
+
+## FAR FUTURE TODO
+- [ ] Multiple directory syncing

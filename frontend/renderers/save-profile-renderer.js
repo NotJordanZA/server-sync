@@ -1,8 +1,11 @@
-window.electronAPI.onUpdateProfilePageLoad((config) => {
+window.electronAPI.onUpdateProfilePageLoad( async (config) => {
+    await populateConnectionProfileSelect();
+
     document.getElementById("saveProfileBtn").textContent = "Update Profile";
     document.getElementById("saveProfileBtn").onclick = () => handleProfileSave(true, config.name);
 
     const profile = document.getElementById("profile");
+    const connectionProfile = document.getElementById("connectionProfile");
     const host = document.getElementById("host");
     const username = document.getElementById("username");
     const password = document.getElementById("password");
@@ -23,12 +26,24 @@ window.electronAPI.onUpdateProfilePageLoad((config) => {
 
     profile.value = config.name;
 
-    const regex = /ftp:\/\/(?:([^:@]+):([^:@]+)@)?([^\/]+)(\/.*)?/;
-    const match = config.profileJSON.sessionUrl.match(regex);
+    // const regex = /ftp:\/\/(?:([^:@]+):([^:@]+)@)?([^\/]+)(\/.*)?/;
+    // const match = config.profileJSON.sessionUrl.match(regex);
 
-    host.value = match[3];
-    username.value = match[1];
-    password.value = match[2];
+    // host.value = match[3];
+    // username.value = match[1];
+    // password.value = match[2];
+    console.log("Pre connection profile: ", config.profileJSON.connectionProfile);
+    connectionProfile.value = config.profileJSON.connectionProfile;
+    if (connectionProfile.value !== "Create New Connection"){
+        const hostLabel = document.getElementById("host-label");
+        const usernameLabel = document.getElementById("username-label");
+        const passwordLabel = document.getElementById("password-label");
+
+        hostLabel.style.display = "none";
+        usernameLabel.style.display = "none";
+        passwordLabel.style.display = "none";
+    }
+    console.log("Post connection profile: ", connectionProfile.value);
     localDir.value = config.profileJSON.localPath;
     remoteDir.value = config.profileJSON.remotePath;
     logDir.value = config.profileJSON.logPath;
@@ -77,6 +92,8 @@ window.electronAPI.onUpdateProfilePageLoad((config) => {
 
 function handleProfileSave(isUpdate = false, originalName = null) {
     const profile = document.getElementById("profile").value;
+    const connectionProfile = document.getElementById("connectionProfile");
+    const connectionProfileValue = connectionProfile.options[connectionProfile.selectedIndex].text;
     const host = document.getElementById("host").value;
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -102,17 +119,41 @@ function handleProfileSave(isUpdate = false, originalName = null) {
         scheduleDetails = { type: "never" };
     }
 
-    const config = {
-        sessionUrl: `ftp://${username}:${password}@${host}`,
-        remotePath: remoteDir,
-        localPath: localDir,
-        logPath: logDir,
-        connections: noConnections,
-        schedule: scheduleDetails,
-        fileMask: fileMask,
-        retentionYears: retentionYears,
-        email: email,
-    };
+    var config = {};
+    
+    if (connectionProfileValue === "Create New Connection"){
+        const connectionConfig = {
+            host: host,
+            username: username,
+            password: password
+        }
+
+        window.electronAPI.saveConnectionProfile(connectionConfig);
+
+        config = {
+            connectionProfile: `${username}@${host}`,
+            remotePath: remoteDir,
+            localPath: localDir,
+            logPath: logDir,
+            connections: noConnections,
+            schedule: scheduleDetails,
+            fileMask: fileMask,
+            retentionYears: retentionYears,
+            email: email,
+        };
+    }else{
+        config = {
+            connectionProfile: `${connectionProfileValue}`,
+            remotePath: remoteDir,
+            localPath: localDir,
+            logPath: logDir,
+            connections: noConnections,
+            schedule: scheduleDetails,
+            fileMask: fileMask,
+            retentionYears: retentionYears,
+            email: email,
+        };
+    }
 
     if (isUpdate) {
         window.electronAPI.updateProfile(profile, originalName, config);
@@ -140,3 +181,50 @@ function handleProfileSave(isUpdate = false, originalName = null) {
 }
 
 document.getElementById("saveProfileBtn").onclick = () => handleProfileSave();
+
+
+async function populateConnectionProfileSelect() {
+    try {
+        const connectionProfiles = await window.electronAPI.getConnectionProfiles();
+        const selectElement = document.getElementById("connectionProfile");
+        const uniqueOptions = new Set();
+
+        var options= selectElement.options;
+        for (var i= 0; i<options.length; i++) {
+            uniqueOptions.add(options[i].value);
+        }
+  
+        connectionProfiles.forEach(profile => {
+            const optionValue = `${profile.username}@${profile.host}`;
+            if (!uniqueOptions.has(optionValue)) {
+            uniqueOptions.add(optionValue);
+            const option = document.createElement("option");
+            option.value = optionValue;
+            option.textContent = optionValue;
+            selectElement.appendChild(option);
+            }
+        });
+        } catch (error) {
+        console.error("Error loading connection profiles:", error);
+        }
+  }
+
+document.getElementById("connectionProfile").onchange = () =>{
+    const selection = document.getElementById("connectionProfile").value;
+    const host = document.getElementById("host-label");
+    const username = document.getElementById("username-label");
+    const password = document.getElementById("password-label");
+    if (selection === "Create New Connection"){
+        host.style.display = "block";
+        username.style.display = "block";
+        password.style.display = "block";
+    }else{
+        host.style.display = "none";
+        username.style.display = "none";
+        password.style.display = "none";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    populateConnectionProfileSelect();
+});

@@ -57,7 +57,9 @@ try {
     try {
         Write-Host "Connecting..."
         $session = New-Object WinSCP.Session
-        $session.SessionLogPath = $logPath
+        if($logPath -ne " "){
+            $session.SessionLogPath = $logPath
+        }
         $sessionOptions.AddRawSettings("PreserveTimeDirs", "1")
         $sessionOptions.Timeout = New-TimeSpan -Seconds 30
         $session.Open($sessionOptions)

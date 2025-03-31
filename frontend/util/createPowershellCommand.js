@@ -16,7 +16,7 @@ export async function constructPowershellCommand(profileName, syncNow = false){
     const sessionUrl = `-sessionUrl "${profile.sessionUrl}"`;
     const remotePath = `-remotePath "${profile.remotePath}"`;
     const localPath = `-localPath "${profile.localPath}"`;
-    const logPath = `-logPath "${profile.logPath}"`;
+    const logPath = `-logPath "${profile.logPath? profile.logPath:" "}"`;
     const internalLogPathArg = `-internalLogPath "${internalLogPath}"`;
     const connections = `-connections ${profile.connections}`;
     
@@ -60,7 +60,7 @@ export async function constructRunSyncCommand(profileName, syncNow = false){
     const sessionUrl = `--connectionProfile "${profile.connectionProfile}"`;
     const remotePath = `--remotePath "${profile.remotePath}"`;
     const localPath = `--localPath "${profile.localPath}"`;
-    const logPath = `--logPath "${profile.logPath}"`;
+    const logPath = `--logPath "${profile.logPath? profile.logPath:" "}"`;
     const internalLogPathArg = `--internalLogPath "${internalLogPath}"`;
     const connections = `--connections ${profile.connections}`;
     

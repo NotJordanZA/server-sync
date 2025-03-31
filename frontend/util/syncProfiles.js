@@ -3,6 +3,7 @@ import { runPowerShell } from "./powershellRunner.js";
 import path from 'path';
 import { fileURLToPath } from "url";
 import 'dotenv/config'
+import { dialog } from "electron";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,7 +32,11 @@ export async function syncProfiles(profiles, callback) {
       callback(`${profileName}\nError:\n${err}`);
       DBCommand = `pwsh.exe -ExecutionPolicy Bypass -File "${psDBScriptPath}" -scheduleLogPath "${profileSyncLog}" -dbURL "${process.env.SQL_API_ADDRESS}" -profileName "${profileName}" -result "Sync Failed"`; 
     }
-    await runPowerShell(DBCommand);
+    try {
+      await runPowerShell(DBCommand);
+    } catch (dbErr) {
+      dialog.showErrorBox("SQL Connection Error", `Failed to post sync result for profile '${profileName}': ${dbErr}`);
+    }
   }
 }
 
